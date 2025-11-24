@@ -1,0 +1,121 @@
+﻿html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Sidebar kaplaması */
+.sidebar {
+    min-height: 100vh;
+}
+
+/* Bootstrap örneğindeki gibi toggle buton stili */
+.btn-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: .25rem .5rem;
+    font-weight: 600;
+    background-color: transparent;
+    border: 0;
+}
+
+    .btn-toggle:hover,
+    .btn-toggle:focus {
+        background-color: rgba(0, 0, 0, .05);
+    }
+
+    .btn-toggle::before {
+        content: "";
+        width: 1.25em;
+        line-height: 0;
+        border-right: 1px solid transparent; /* hizalama için boşluk */
+        margin-right: .5rem;
+    }
+
+/* İç linkler */
+.btn-toggle-nav a {
+    display: inline-block;
+    padding: .1875rem .5rem;
+    margin-top: .125rem;
+    margin-left: 1.25rem;
+}
+
+    .btn-toggle-nav a:hover,
+    .btn-toggle-nav a:focus {
+        background-color: rgba(0, 0, 0, .05);
+        text-decoration: none;
+    }
+
+/* Sağ içerikte hoş boşluklar */
+main {
+    background-color: #fff;
+}
+
+/* Accordion başlıklarına ok ekle (Bootstrap 5 varsayılanını garantiye al) */
+.accordion-button::after {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-left: auto;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+    transition: transform .2s ease-in-out;
+    /* Bootstrap değişkeni varsa onu kullan, yoksa aşağıdaki fallback'i kullan */
+    background-image: var(--bs-accordion-btn-icon, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708'/%3e%3c/svg%3e"));
+}
+
+.accordion-button:not(.collapsed)::after {
+    transform: rotate(-180deg);
+}
+
+/* Sidebars örneği stilindeki chevron */
+.btn-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    background: transparent;
+    border: 0;
+    padding: .25rem .5rem;
+}
+
+    .btn-toggle:hover,
+    .btn-toggle:focus {
+        background-color: rgba(0,0,0,.05);
+    }
+
+    /* Chevron (kapalıyken sağa bakan, açılınca aşağı dönen) */
+    .btn-toggle::before {
+        content: "";
+        width: 1rem;
+        height: 1rem;
+        display: inline-block;
+        transition: transform .2s ease;
+        background-repeat: no-repeat;
+        background-size: 1rem 1rem;
+        /* Bootstrap’le uyumlu data-uri chevron */
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3e%3cpath fill-rule='evenodd' d='M6.646 12.354a.5.5 0 0 1 0-.708L10.293 8 6.646 4.354a.5.5 0 1 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708 0'/%3e%3c/svg%3e");
+    }
+
+    /* .collapsed iken sağa baksın, açıkken aşağı dönsün */
+    .btn-toggle:not(.collapsed)::before {
+        transform: rotate(90deg);
+    }

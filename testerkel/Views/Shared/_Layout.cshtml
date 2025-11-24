@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - testerkel</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/testerkel.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- ÜST NAVBAR -->
+    <header class="border-bottom">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">testerkel</a>
+
+                <!-- Küçük ekranlarda sidebar'ı aç/kapat -->
+                <button class="navbar-toggler" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
+                        aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle sidebar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ANA YERLEŞİM: SOLDA SIDEBAR + SAĞDA İÇERİK -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- SIDEBAR -->
+            <nav id="sidebarMenu"
+                 class="col-12 col-lg-3 col-xl-2 d-lg-block bg-white border-end collapse sidebar vh-100 sticky-top p-0">
+                <div class="sidebar-inner p-3">
+                    <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+                        <span class="fs-5 fw-semibold">Erkel ERP</span>
+                    </a>
+
+                    <ul class="list-unstyled ps-0">
+                        <li class="mb-1">
+                            <button class="btn btn-toggle align-items-center rounded collapsed"
+                                    data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                                Stok
+                            </button>
+                            <div class="collapse show" id="home-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    <li><a href="#" class="link-dark rounded">Stok Giriş</a></li>
+                                    <li><a href="#" class="link-dark rounded">Sarf</a></li>
+                                    <li><a href="#" class="link-dark rounded">Stok Çıkış</a></li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="mb-1">
+                            <button class="btn btn-toggle align-items-center rounded collapsed"
+                                    data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                                Dashboard
+                            </button>
+                            <div class="collapse" id="dashboard-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    <li><a href="#" class="link-dark rounded">Overview</a></li>
+                                    <li><a href="#" class="link-dark rounded">Weekly</a></li>
+                                    <li><a href="#" class="link-dark rounded">Monthly</a></li>
+                                    <li><a href="#" class="link-dark rounded">Annually</a></li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="mb-1">
+                            <button class="btn btn-toggle align-items-center rounded collapsed"
+                                    data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                                Orders
+                            </button>
+                            <div class="collapse" id="orders-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    <li><a href="#" class="link-dark rounded">New</a></li>
+                                    <li><a href="#" class="link-dark rounded">Processed</a></li>
+                                    <li><a href="#" class="link-dark rounded">Shipped</a></li>
+                                    <li><a href="#" class="link-dark rounded">Returned</a></li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="border-top my-3"></li>
+
+                        <li class="mb-1">
+                            <button class="btn btn-toggle align-items-center rounded collapsed"
+                                    data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+                                Account
+                            </button>
+                            <div class="collapse" id="account-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    <li><a href="#" class="link-dark rounded">New...</a></li>
+                                    <li><a href="#" class="link-dark rounded">Profile</a></li>
+                                    <li><a href="#" class="link-dark rounded">Settings</a></li>
+                                    <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- SAYFA İÇERİĞİ -->
+            <main class="col-12 col-lg-9 col-xl-10 ms-auto px-4 py-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - testerkel - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- (İsteğe bağlı) Sidebar collapse state'ini hatırla -->
+    <script>
+        // Kullanıcı tercihini saklamak için localStorage
+        (function () {
+            var key = "sidebar-collapsed";
+            var sidebar = document.getElementById("sidebarMenu");
+            var collapsed = localStorage.getItem(key) === "1";
+
+            // İlk yüklemede: küçük ekran harici ise uygula
+            if (window.innerWidth >= 992) {
+                if (collapsed) {
+                    // Bootstrap Collapse nesnesi ile kapat
+                    var c = bootstrap.Collapse.getOrCreateInstance(sidebar, { toggle: false });
+                    c.hide();
+                } else {
+                    var c2 = bootstrap.Collapse.getOrCreateInstance(sidebar, { toggle: false });
+                    c2.show();
+                }
+            }
+
+            // Toggleda kaydet
+            sidebar.addEventListener("shown.bs.collapse", function () {
+                localStorage.setItem(key, "0");
+            });
+            sidebar.addEventListener("hidden.bs.collapse", function () {
+                localStorage.setItem(key, "1");
+            });
+        })();
+    </script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
