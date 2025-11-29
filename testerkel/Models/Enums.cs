@@ -2,12 +2,12 @@
 {
     public enum UnitType : byte
     {
-        Piece = 1,     // Adet
+        Adet = 1,     // Adet
         Kilogram = 2,  // Kg
-        Liter = 3,     // Litre
-        Box = 4,       // Kutu
-        Meter = 5,     // Metre
-        Hour = 6       // Saat (hizmet/çalışma süresi)
+        Litre = 3,     // Litre
+        Kutu = 4,       // Kutu
+        Metre = 5,     // Metre
+        Saat = 6       // Saat (hizmet/çalışma süresi)
     }
 
 

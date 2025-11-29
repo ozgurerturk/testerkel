@@ -1,0 +1,203 @@
+﻿@model testerkel.ViewModels.Product.ProductEditVm
+
+@{
+    ViewData["Title"] = "Ürün Detayı";
+}
+
+<h1 class="mb-3">Ürün Detayı</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <span class="badge bg-secondary me-2" id="modeBadge">Görüntüleme Modu</span>
+        <small class="text-muted">Düzenle tuşuna basarak bu üründe değişiklik yapabilirsiniz.</small>
+    </div>
+    <div>
+        <button type="button" id="btnEdit" class="btn btn-primary">
+            <i class="bi bi-pencil-square"></i> Düzenle
+        </button>
+        <button type="submit" form="productForm" id="btnSave" class="btn btn-success d-none">
+            Kaydet
+        </button>
+        <button type="button" id="btnCancel" class="btn btn-outline-secondary d-none">
+            İptal
+        </button>
+        <a asp-action="Index" class="btn btn-link">Geri</a>
+    </div>
+</div>
+
+<hr />
+
+<form asp-action="Edit" method="post" id="productForm">
+    <input type="hidden" asp-for="Id" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="mb-3">
+        <label asp-for="Code" class="form-label">Ürün Kodu</label>
+        <input asp-for="Code" class="form-control" data-editable="true" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Ürün İsmi</label>
+        <input asp-for="Name" class="form-control" data-editable="true" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Unit" class="form-label">Birim</label>
+        <select asp-for="Unit"
+                asp-items="Model.UnitTypes"
+                class="form-control"
+                data-editable="true">
+        </select>
+        <span asp-validation-for="Unit" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Fiyat</label>
+        <input asp-for="Price" class="form-control" data-editable="true" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Kullanıcının isteği: var kullanalım
+        (function () {
+            var form = document.getElementById("productForm");
+            var editBtn = document.getElementById("btnEdit");
+            var saveBtn = document.getElementById("btnSave");
+            var cancelBtn = document.getElementById("btnCancel");
+            var modeBadge = document.getElementById("modeBadge");
+
+            if (!form || !editBtn || !saveBtn || !cancelBtn || !modeBadge) {
+                return;
+            }
+
+            var editableFields = form.querySelectorAll("[data-editable='true']");
+            var isEditMode = false;
+            var initialValues = {};
+
+            // İlk değerleri sakla (Cancel için)
+            editableFields.forEach(function (el) {
+                initialValues[el.name] = el.value;
+            });
+
+            function setEditMode(editMode) {
+                isEditMode = editMode;
+
+                editableFields.forEach(function (el) {
+                    if (editMode) {
+                        el.removeAttribute("readonly");
+                        el.removeAttribute("disabled");
+                    } else {
+                        if (el.tagName === "SELECT") {
+                            el.setAttribute("disabled", "disabled");
+                        } else {
+                            el.setAttribute("readonly", "readonly");
+                        }
+                    }
+                });
+
+                if (editMode) {
+                    editBtn.classList.add("d-none");
+                    saveBtn.classList.remove("d-none");
+                    cancelBtn.classList.remove("d-none");
+                    modeBadge.textContent = "Edit mode";
+                    modeBadge.classList.remove("bg-secondary");
+                    modeBadge.classList.add("bg-warning", "text-dark");
+                } else {
+                    editBtn.classList.remove("d-none");
+                    saveBtn.classList.add("d-none");
+                    cancelBtn.classList.add("d-none");
+                    modeBadge.textContent = "View mode";
+                    modeBadge.classList.remove("bg-warning", "text-dark");
+                    modeBadge.classList.add("bg-secondary");
+                }
+            }
+
+            // Başlangıç: View mode
+            setEditMode(false);
+
+            editBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                setEditMode(true);
+            });
+
+            cancelBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                // Alanları başlangıç değerlerine geri al
+                editableFields.forEach(function (el) {
+                    if (initialValues.hasOwnProperty(el.name)) {
+                        el.value = initialValues[el.name];
+                    }
+                });
+
+                setEditMode(false);
+            });
+
+            form.addEventListener("submit", function () {
+                // Double click önleme
+                saveBtn.disabled = true;
+            });
+        })();
+
+        (function () {
+            if (!window.jQuery || !$.validator) {
+                return;
+            }
+
+            // 1) number kuralını normalize et (virgülü noktaya çevir)
+            if ($.validator.methods.number) {
+                var originalNumber = $.validator.methods.number;
+                $.validator.methods.number = function (value, element) {
+                    if (this.optional(element)) {
+                        return true;
+                    }
+
+                    var normalized = (value || "").replace(",", ".");
+                    return originalNumber.call(this, normalized, element);
+                };
+            }
+
+            // 2) range kuralını da normalize et
+            if ($.validator.methods.range) {
+                $.validator.methods.range = function (value, element, param) {
+                    if (this.optional(element)) {
+                        return true;
+                    }
+
+                    var normalized = (value || "").replace(",", ".");
+                    var val = parseFloat(normalized);
+
+                    if (!Number.isFinite(val)) {
+                        return false;
+                    }
+
+                    var min = param[0];
+                    var max = param[1];
+
+                    return val >= min && val <= max;
+                };
+            }
+
+            // 3) (Opsiyonel ama güzel) submit'te input değerini normalize et
+            var form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    var priceInput = form.querySelector('input[name="Price"]');
+                    if (!priceInput) return;
+
+                    var v = priceInput.value || "";
+                    priceInput.value = v.replace(",", ".");
+                });
+            }
+        })();
+    </script>
+}

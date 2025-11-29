@@ -1,0 +1,117 @@
+﻿@model testerkel.ViewModels.Product.ProductCreateVm
+@{
+    ViewData["Title"] = "Ürün Oluştur";
+}
+
+<h1>Ürün Oluştur</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Code" class="form-label">Ürün Kodu</label>
+                <input asp-for="Code" class="form-control" />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Ürün İsmi</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Unit" class="form-label">Birim</label>
+                <select asp-for="Unit"
+                        asp-items="Model.UnitTypes"
+                        class="form-control">
+                </select>
+                <span asp-validation-for="Unit" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label">Fiyat</label>
+                <input asp-for="Price" class="form-control" type="text" inputmode="decimal" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Geri</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Basit: form submit'te çift tıklamayı engellemek için submit butonunu disable edelim
+        var form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function () {
+                var submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                }
+            });
+        }
+
+        (function () {
+            if (!window.jQuery || !$.validator) {
+                return;
+            }
+
+            // 1) number kuralını normalize et (virgülü noktaya çevir)
+            if ($.validator.methods.number) {
+                var originalNumber = $.validator.methods.number;
+                $.validator.methods.number = function (value, element) {
+                    if (this.optional(element)) {
+                        return true;
+                    }
+
+                    var normalized = (value || "").replace(",", ".");
+                    return originalNumber.call(this, normalized, element);
+                };
+            }
+
+            // 2) range kuralını da normalize et
+            if ($.validator.methods.range) {
+                $.validator.methods.range = function (value, element, param) {
+                    if (this.optional(element)) {
+                        return true;
+                    }
+
+                    var normalized = (value || "").replace(",", ".");
+                    var val = parseFloat(normalized);
+
+                    if (!Number.isFinite(val)) {
+                        return false;
+                    }
+
+                    var min = param[0];
+                    var max = param[1];
+
+                    return val >= min && val <= max;
+                };
+            }
+
+            // 3) (Opsiyonel ama güzel) submit'te input değerini normalize et
+            var form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    var priceInput = form.querySelector('input[name="Price"]');
+                    if (!priceInput) return;
+
+                    var v = priceInput.value || "";
+                    priceInput.value = v.replace(",", ".");
+                });
+            }
+        })();
+    </script>
+}
