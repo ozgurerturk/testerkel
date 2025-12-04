@@ -137,37 +137,22 @@ namespace testerkel.Controllers
             return RedirectToAction(nameof(Details), new { id = product.Id });
         }
 
-
-        // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var product = await _context.Products
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (product == null) return NotFound();
-
-            return View(product); // @model Product
-        }
-
-        // POST: Products/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> DeleteAjax(int id)
         {
             var product = await _context.Products.FindAsync(id);
-            if (product != null)
+            if (product == null)
             {
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Product deleted. Id={Id}, Code={Code}", product.Id, product.Code);
+                return Json(new { success = false, message = "Ürün bulunamadı." });
             }
 
-            return RedirectToAction(nameof(Index));
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
         }
+
+
 
         // --- Helper ---
 

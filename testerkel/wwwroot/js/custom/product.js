@@ -1,81 +1,78 @@
-﻿
-// Kullanıcının isteği: var kullanalım
-(function () {
-    var form = document.getElementById("productForm");
-    var editBtn = document.getElementById("btnEdit");
-    var saveBtn = document.getElementById("btnSave");
-    var cancelBtn = document.getElementById("btnCancel");
-    var modeBadge = document.getElementById("modeBadge");
+﻿// product.js
 
-    if (!form || !editBtn || !saveBtn || !cancelBtn || !modeBadge) {
+// Sadece Products/Index sayfası varsa çalışan init fonksiyonu
+function initProductIndexPage() {
+    // Bu sayfa değilse hiçbir şey yapma
+    var pageRoot = document.getElementById("product-index-page");
+    if (!pageRoot) {
         return;
     }
 
-    var editableFields = form.querySelectorAll("[data-editable='true']");
-    var isEditMode = false;
-    var initialValues = {};
+    console.log("Product Index page init");
 
-    // İlk değerleri sakla (Cancel için)
-    editableFields.forEach(function (el) {
-        initialValues[el.name] = el.value;
-    });
+    // Delete butonları için click handler
+    $(document).on("click", ".js-product-delete", function (e) {
+        e.preventDefault();
 
-    function setEditMode(editMode) {
-        isEditMode = editMode;
+        var button = $(this);
+        var id = button.data("id");
 
-        editableFields.forEach(function (el) {
-            if (editMode) {
-                el.removeAttribute("readonly");
-                el.removeAttribute("disabled");
-            } else {
-                if (el.tagName === "SELECT") {
-                    el.setAttribute("disabled", "disabled");
-                } else {
-                    el.setAttribute("readonly", "readonly");
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: "Bu ürünü silmek üzeresiniz. İşlem geri alınamaz.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Evet, sil",
+            cancelButtonText: "İptal"
+        }).then(function (result) {
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            // Evet dendi → AJAX ile delete
+            $.ajax({
+                url: "/Products/DeleteAjax",
+                type: "POST",
+                data: { id: id },
+                success: function (resp) {
+                    if (resp && resp.success) {
+                        // Satırı DOM'dan kaldır
+                        var row = button.closest("tr");
+                        row.fadeOut(200, function () {
+                            row.remove();
+                        });
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Silindi",
+                            text: "Ürün başarıyla silindi.",
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Hata",
+                            text: resp && resp.message ? resp.message : "Silme işlemi başarısız oldu."
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Hata",
+                        text: "Sunucuya erişilirken bir sorun oluştu."
+                    });
                 }
-            }
+            });
         });
-
-        if (editMode) {
-            editBtn.classList.add("d-none");
-            saveBtn.classList.remove("d-none");
-            cancelBtn.classList.remove("d-none");
-            modeBadge.textContent = "Edit mode";
-            modeBadge.classList.remove("bg-secondary");
-            modeBadge.classList.add("bg-warning", "text-dark");
-        } else {
-            editBtn.classList.remove("d-none");
-            saveBtn.classList.add("d-none");
-            cancelBtn.classList.add("d-none");
-            modeBadge.textContent = "View mode";
-            modeBadge.classList.remove("bg-warning", "text-dark");
-            modeBadge.classList.add("bg-secondary");
-        }
-    }
-
-    // Başlangıç: View mode
-    setEditMode(false);
-
-    editBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        setEditMode(true);
     });
+}
 
-    cancelBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-
-        // Alanları başlangıç değerlerine geri al
-        editableFields.forEach(function (el) {
-            if (initialValues.hasOwnProperty(el.name)) {
-                el.value = initialValues[el.name];
-            }
-        });
-
-        setEditMode(false);
-    });
-
-    form.addEventListener("submit", function () {
-        // Double click önleme
-        saveBtn.disabled = true;
-    });
-})();
+// Sayfa yüklendiğinde sadece "ilgili" init fonksiyonlarını çağır
+document.addEventListener("DOMContentLoaded", function () {
+    // İleride başka sayfa init fonksiyonları da ekleyebilirsin:
+    // initCustomerIndexPage(), initOrderCreatePage(), vs.
+    // Şu an sadece product index init çalışacak:
+    initProductIndexPage();
+});
