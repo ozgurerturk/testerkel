@@ -1,9 +1,9 @@
 ﻿@model testerkel.ViewModels.Product.ProductCreateVm
 @{
-    ViewData["Title"] = "Ürün Oluştur";
+    ViewData["Title"] = "Malzeme Oluştur";
 }
 
-<h1>Ürün Oluştur</h1>
+<h1>Malzeme Oluştur</h1>
 
 <hr />
 
@@ -13,13 +13,13 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">
-                <label asp-for="Code" class="form-label">Ürün Kodu</label>
+                <label asp-for="Code" class="form-label">Malzeme Kodu</label>
                 <input asp-for="Code" class="form-control" />
                 <span asp-validation-for="Code" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Name" class="form-label">Ürün İsmi</label>
+                <label asp-for="Name" class="form-label">Malzeme İsmi</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>

@@ -1,0 +1,111 @@
+﻿@model IEnumerable<testerkel.Models.Warehouse>
+
+@{
+    ViewData["Title"] = "Depolar";
+}
+
+<h1>Depolar</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Yeni Depo</a>
+</p>
+
+<table class="table table-striped table-bordered table-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Kod</th>
+            <th>Ad</th>
+            <th>Aktif</th>
+            <th style="width: 220px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Code</td>
+                    <td>@(string.IsNullOrWhiteSpace(item.Name) ? "-" : item.Name)</td>
+                    <td>
+                        @if (item.IsActive)
+                        {
+                            <span class="badge bg-success">Aktif</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Pasif</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                            Detay / Düzenle
+                        </a>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger js-warehouse-delete"
+                                data-id="@item.Id"
+                                data-code="@item.Code">
+                            Sil
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">Depo bulunamadı.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Sadece Warehouse Index'te çalışacak basit delete handler
+        (function () {
+            var buttons = document.querySelectorAll(".js-warehouse-delete");
+            if (!buttons.length) return;
+
+            buttons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    var id = btn.getAttribute("data-id");
+                    var code = btn.getAttribute("data-code") || id;
+
+                    Swal.fire({
+                        title: "Emin misiniz?",
+                        text: code + " kodlu depoyu silmek istiyor musunuz?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Evet, sil",
+                        cancelButtonText: "İptal"
+                    }).then(function (result) {
+                        if (!result.isConfirmed) return;
+
+                        fetch("@Url.Action("Delete", "Warehouses")", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? ""
+                            },
+                            body: JSON.stringify({ id: id })
+                        })
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            if (data && data.success) {
+                                Swal.fire("Silindi", "Depo başarıyla silindi.", "success")
+                                    .then(function () { location.reload(); });
+                            } else {
+                                Swal.fire("Hata", "Depo silinirken bir hata oluştu.", "error");
+                            }
+                        })
+                        .catch(function () {
+                            Swal.fire("Hata", "Sunucuya ulaşılamadı.", "error");
+                        });
+                    });
+                });
+            });
+        })();
+    </script>
+}

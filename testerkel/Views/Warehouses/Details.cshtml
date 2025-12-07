@@ -1,0 +1,116 @@
+﻿@model testerkel.ViewModels.Warehouse.WarehouseEditVm
+
+@{
+    ViewData["Title"] = "Depo Detay";
+}
+
+<h1 class="mb-3">Depo Detay</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <span class="badge bg-secondary me-2" id="modeBadge">View mode</span>
+        <small class="text-muted">Düzenlemek için Edit'e tıklayın.</small>
+    </div>
+    <div>
+        <button type="button" id="btnEdit" class="btn btn-primary">
+            Düzenle
+        </button>
+        <button type="submit" form="warehouseForm" id="btnSave" class="btn btn-success d-none">
+            Kaydet
+        </button>
+        <button type="button" id="btnCancel" class="btn btn-outline-secondary d-none">
+            İptal
+        </button>
+        <a asp-action="Index" class="btn btn-link">Geri</a>
+    </div>
+</div>
+
+<hr />
+
+<ul class="nav nav-tabs mb-3" id="warehouseTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active"
+                id="info-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#info"
+                type="button"
+                role="tab"
+                aria-controls="info"
+                aria-selected="true">
+            Depo Bilgileri
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link"
+                id="products-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#products"
+                type="button"
+                role="tab"
+                aria-controls="products"
+                aria-selected="false">
+            Depodaki Ürünler
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="warehouseTabContent">
+    <!-- Depo Bilgileri -->
+    <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+        <form asp-action="Edit" method="post" id="warehouseForm">
+            <input type="hidden" asp-for="Id" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Code" class="form-label">Depo Kodu</label>
+                <input asp-for="Code" class="form-control" data-editable="true" />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Depo Adı</label>
+                <input asp-for="Name" class="form-control" data-editable="true" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="IsActive" class="form-check-input" data-editable="true" />
+                <label asp-for="IsActive" class="form-check-label">Aktif</label>
+            </div>
+        </form>
+    </div>
+
+    <!-- Depodaki Ürünler -->
+    <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+        <div class="mt-3">
+            <h5>Depodaki Ürünler</h5>
+            <div id="warehouseProductsContainer" class="mt-2">
+                <div class="text-muted">Yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/js/custom/warehouse.js"></script>
+
+    <script>
+        // Sadece bu view için: hem edit toggle hem product tab çalışsın
+        warehouseDetailsInit({
+            formId: "warehouseForm",
+            editButtonId: "btnEdit",
+            saveButtonId: "btnSave",
+            cancelButtonId: "btnCancel",
+            modeBadgeId: "modeBadge",
+            productsTabId: "products-tab",
+            productsContainerId: "warehouseProductsContainer",
+            getProductsUrl: "@Url.Action("GetProducts", "Warehouses")",
+            warehouseId: @Model.Id
+        });
+    </script>
+}

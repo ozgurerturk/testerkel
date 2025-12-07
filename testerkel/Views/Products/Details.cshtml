@@ -1,15 +1,15 @@
 ﻿@model testerkel.ViewModels.Product.ProductEditVm
 
 @{
-    ViewData["Title"] = "Ürün Detayı";
+    ViewData["Title"] = "Malzeme Detayı";
 }
 
-<h1 class="mb-3">Ürün Detayı</h1>
+<h1 class="mb-3">Malzeme Detayı</h1>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
         <span class="badge bg-secondary me-2" id="modeBadge">Görüntüleme Modu</span>
-        <small class="text-muted">Düzenle tuşuna basarak bu üründe değişiklik yapabilirsiniz.</small>
+        <small class="text-muted">Düzenle tuşuna basarak bu malzemede değişiklik yapabilirsiniz.</small>
     </div>
     <div>
         <button type="button" id="btnEdit" class="btn btn-primary">
@@ -33,13 +33,13 @@
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
     <div class="mb-3">
-        <label asp-for="Code" class="form-label">Ürün Kodu</label>
+        <label asp-for="Code" class="form-label">Malzeme Kodu</label>
         <input asp-for="Code" class="form-control" data-editable="true" />
         <span asp-validation-for="Code" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Name" class="form-label">Ürün İsmi</label>
+        <label asp-for="Name" class="form-label">Malzeme İsmi</label>
         <input asp-for="Name" class="form-control" data-editable="true" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>

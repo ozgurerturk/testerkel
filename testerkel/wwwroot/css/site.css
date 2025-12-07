@@ -119,3 +119,11 @@ main {
     .btn-toggle:not(.collapsed)::before {
         transform: rotate(90deg);
     }
+
+.main-content {
+    background: transparent !important;
+}
+
+.footer-content {
+    background: white
+}

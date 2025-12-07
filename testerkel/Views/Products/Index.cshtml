@@ -1,22 +1,22 @@
 ﻿@model IEnumerable<testerkel.Models.Product>
 
 @{
-    ViewData["Title"] = "Ürünler";
+    ViewData["Title"] = "Malzemeler";
 }
 
 <div id="product-index-page">
     @* <-- sayfayı tanımak için *@
-    <h1>Ürünler</h1>
+    <h1>Malzemeler</h1>
 
     <p>
-        <a asp-action="Create" class="btn btn-primary">Yeni Ürün Kaydı</a>
+        <a asp-action="Create" class="btn btn-primary">Yeni Malzeme Kaydı</a>
     </p>
 
     <table class="table table-striped table-bordered table-sm">
         <thead class="table-light">
             <tr>
-                <th>Ürün Kodu</th>
-                <th>Ürün İsmi</th>
+                <th>Malzeme Kodu</th>
+                <th>Malzeme İsmi</th>
                 <th>Birim</th>
                 <th class="text-end">Fiyat</th>
                 <th style="width: 190px;"></th>
@@ -49,7 +49,7 @@
             else
             {
                 <tr>
-                    <td colspan="5" class="text-center text-muted">Ürün bulunamadı</td>
+                    <td colspan="5" class="text-center text-muted">Malzeme bulunamadı</td>
                 </tr>
             }
         </tbody>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - testerkel</title>
+    <title>@ViewData["Title"] - ERKEL ERP</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -11,9 +11,9 @@
 </head>
 <body>
     <header class="border-bottom">
-        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: cornflowerblue">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">testerkel</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ERKEL ERP</a>
 
                 <button class="navbar-toggler" type="button"
                         data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
@@ -24,10 +24,10 @@
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik</a>
                         </li>
                     </ul>
                 </div>
@@ -40,14 +40,14 @@
             <nav id="sidebarMenu"
                  class="col-12 col-lg-3 col-xl-2 d-lg-block bg-white border-end collapse sidebar vh-100 sticky-top p-0">
                 <div class="sidebar-inner p-3">
-                    <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+                    @* <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
                         <span class="fs-5 fw-semibold">Erkel ERP</span>
-                    </a>
+                    </a> *@
 
                     <ul class="list-unstyled ps-0">
                         <li class="mb-1">
                             <button class="btn btn-toggle align-items-center rounded collapsed"
-                                    data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                                    data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
                                 Stok
                             </button>
                             <div class="collapse show" id="home-collapse">
@@ -62,7 +62,7 @@
                         <li class="mb-1">
                             <button class="btn btn-toggle align-items-center rounded collapsed"
                                     data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                                Dashboard
+                                Malzemeler
                             </button>
                             <div class="collapse" id="dashboard-collapse">
                                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -75,14 +75,12 @@
                         <li class="mb-1">
                             <button class="btn btn-toggle align-items-center rounded collapsed"
                                     data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                                Orders
+                                Depolar
                             </button>
                             <div class="collapse" id="orders-collapse">
                                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                    <li><a href="#" class="link-dark rounded">New</a></li>
-                                    <li><a href="#" class="link-dark rounded">Processed</a></li>
-                                    <li><a href="#" class="link-dark rounded">Shipped</a></li>
-                                    <li><a href="#" class="link-dark rounded">Returned</a></li>
+                                    <li><a href="@Url.Action("Index", "Warehouses")" class="link-dark rounded">Depo Listesi</a></li>
+                                    <li><a href="@Url.Action("Create", "Warehouses")" class="link-dark rounded">Depo Oluştur</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -107,13 +105,23 @@
                 </div>
             </nav>
 
-            <main class="col-12 col-lg-9 col-xl-10 ms-auto px-4 py-3">
+            @if (ViewData["Title"]?.ToString() == "Ana Sayfa")
+            {
+                <style>
+                    body {
+                        background: url('/assets/img/direkerkel.jpeg') no-repeat center center fixed;
+                        background-size: cover;
+                    }
+                </style>
+            }
+
+            <main class="col-12 col-lg-9 col-xl-10 ms-auto px-4 py-3 main-content">
                 @RenderBody()
             </main>
         </div>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted footer-content">
         <div class="container">
             &copy; 2025 - testerkel - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

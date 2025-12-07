@@ -54,10 +54,20 @@ namespace testerkel.Data
             // Warehouse
             modelBuilder.Entity<Warehouse>(e =>
             {
-                e.Property(x => x.Name)
-                    .HasMaxLength(100)
+                e.Property(x => x.Code)
+                    .HasMaxLength(50)
                     .IsRequired();
+
+                e.HasIndex(x => x.Code)
+                    .IsUnique();
+
+                e.Property(x => x.Name)
+                    .HasMaxLength(200);
+
+                e.Property(x => x.IsActive)
+                    .HasDefaultValue(true);
             });
+
 
             // Customer
             modelBuilder.Entity<Customer>(e =>
