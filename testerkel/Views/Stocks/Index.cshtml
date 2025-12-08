@@ -1,0 +1,81 @@
+﻿@using testerkel.ViewModels.Stock
+@model testerkel.ViewModels.Stock.StockOperationVm
+@{
+    ViewData["Title"] = "Stok İşlemleri";
+}
+
+<h2 class="mb-4">Stok İşlemleri</h2>
+
+<form asp-controller="Stocks"
+      asp-action="Index"
+      method="post"
+      class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <div class="col-md-6">
+        <label asp-for="WarehouseId" class="form-label">Depo</label>
+        <select asp-for="WarehouseId"
+                class="form-select"
+                asp-items="ViewBag.Warehouses">
+            <option value="">Depo seçiniz...</option>
+        </select>
+        <span asp-validation-for="WarehouseId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">İşlem Türü</label>
+        <div class="form-control border-0 p-0">
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       asp-for="Operation"
+                       value="@StockOperationType.PurchaseIn"
+                       checked />
+                <label class="form-check-label">
+                    Stok Girişi (Satınalma)
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       asp-for="Operation"
+                       value="@StockOperationType.SalesOut" />
+                <label class="form-check-label">
+                    Stok Çıkışı (Satış)
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       asp-for="Operation"
+                       value="@StockOperationType.ConsumptionOut" />
+                <label class="form-check-label">
+                    Sarf / Tüketim
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       asp-for="Operation"
+                       value="@StockOperationType.Transfer" />
+                <label class="form-check-label">
+                    Depodan Depoya Transfer
+                </label>
+            </div>
+        </div>
+        <span asp-validation-for="Operation" class="text-danger"></span>
+    </div>
+
+    <div class="col-12 d-flex gap-2 mt-3">
+        <button type="submit" class="btn btn-primary">
+            Devam Et
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

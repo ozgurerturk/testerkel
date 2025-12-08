@@ -1,0 +1,95 @@
+﻿@model StockTransferEditVm
+@{
+    ViewData["Title"] = "Depodan Depoya Transfer";
+}
+
+<h2 class="mb-4">Depodan Depoya Transfer</h2>
+
+<form asp-controller="StockTransfer"
+      asp-action="Create"
+      method="post"
+      class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <div class="col-md-4">
+        <label asp-for="FromWarehouseId" class="form-label">Kaynak Depo</label>
+        <select asp-for="FromWarehouseId"
+                class="form-select"
+                asp-items="ViewBag.Warehouses">
+            <option value="">Seçiniz...</option>
+        </select>
+        <span asp-validation-for="FromWarehouseId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="ToWarehouseId" class="form-label">Hedef Depo</label>
+        <select asp-for="ToWarehouseId"
+                class="form-select"
+                asp-items="ViewBag.Warehouses">
+            <option value="">Seçiniz...</option>
+        </select>
+        <span asp-validation-for="ToWarehouseId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="TransferDate" class="form-label">Tarih</label>
+        <input asp-for="TransferDate" type="date" class="form-control" />
+        <span asp-validation-for="TransferDate" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Notes" class="form-label">Not</label>
+        <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+        <span asp-validation-for="Notes" class="text-danger"></span>
+    </div>
+
+    <hr class="mt-4" />
+
+    <h5 class="mb-3">Ürün Satırları</h5>
+
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 60%;">Ürün</th>
+                    <th style="width: 20%;">Miktar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.Lines.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <select asp-for="Lines[@i].ProductId"
+                                    class="form-select"
+                                    asp-items="ViewBag.Products">
+                                <option value="">Ürün seçiniz...</option>
+                            </select>
+                            <span asp-validation-for="Lines[@i].ProductId" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input asp-for="Lines[@i].Qty" class="form-control" />
+                            <span asp-validation-for="Lines[@i].Qty" class="text-danger"></span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            Transferi Kaydet
+        </button>
+
+        <a asp-controller="Warehouse"
+           asp-action="Index"
+           class="btn btn-secondary">
+            Depo Listesine Dön
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

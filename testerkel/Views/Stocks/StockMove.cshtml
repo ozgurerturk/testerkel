@@ -1,0 +1,62 @@
+﻿@using testerkel.ViewModels.Stock
+@model StockTxnVm
+@{
+    ViewData["Title"] = Model.PageTitle;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "PurchaseIn";
+}
+
+<h2 class="mb-4">@Model.PageTitle</h2>
+
+<form asp-controller="Stocks"
+      asp-action="@currentAction"
+      method="post"
+      class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="WarehouseId" />
+
+    <div class="col-md-6">
+        <label asp-for="ProductId" class="form-label"></label>
+        <select asp-for="ProductId"
+                class="form-select"
+                asp-items="ViewBag.Products">
+            <option value="">Ürün seçiniz...</option>
+        </select>
+        <span asp-validation-for="ProductId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Qty" class="form-label"></label>
+        <input asp-for="Qty" class="form-control" />
+        <span asp-validation-for="Qty" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="TxnDate" class="form-label"></label>
+        <input asp-for="TxnDate" class="form-control" type="date" />
+        <span asp-validation-for="TxnDate" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Note" class="form-label"></label>
+        <textarea asp-for="Note" class="form-control" rows="2"></textarea>
+        <span asp-validation-for="Note" class="text-danger"></span>
+    </div>
+
+    <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            @Model.SubmitText
+        </button>
+
+        <a asp-controller="Warehouse"
+           asp-action="Detail"
+           asp-route-id="@Model.WarehouseId"
+           class="btn btn-secondary">
+            Depoya Dön
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
