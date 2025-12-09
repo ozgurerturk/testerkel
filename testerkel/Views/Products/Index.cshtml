@@ -4,6 +4,53 @@
     ViewData["Title"] = "Malzemeler";
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Excel ile Toplu Ürün Yükleme</h5>
+        <p class="card-text">
+            Önce Excel şablonunu indirip doldurun, ardından buradan yükleyin.
+        </p>
+
+        <div class="mb-2">
+            <a asp-action="CreateExcelTemplate"
+               class="btn btn-sm btn-outline-secondary">
+                Excel Şablonunu İndir
+            </a>
+        </div>
+
+        <form asp-action="ImportFromExcel"
+              asp-controller="Products"
+              method="post"
+              enctype="multipart/form-data"
+              class="row g-2 align-items-end">
+            @Html.AntiForgeryToken()
+
+            <div class="col-md-6">
+                <label class="form-label">Excel Dosyası (.xlsx)</label>
+                <input type="file"
+                       name="file"
+                       class="form-control"
+                       accept=".xlsx" />
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">
+                    Excel'den Yükle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div id="product-index-page">
     @* <-- sayfayı tanımak için *@
     <h1>Malzemeler</h1>

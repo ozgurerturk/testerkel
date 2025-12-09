@@ -2,12 +2,20 @@
 {
     public enum UnitType : byte
     {
-        Adet = 1,     // Adet
-        Kilogram = 2,  // Kg
-        Litre = 3,     // Litre
-        Kutu = 4,       // Kutu
-        Metre = 5,     // Metre
-        Saat = 6       // Saat (hizmet/çalışma süresi)
+        Adet = 1,
+        Kilogram = 2,
+        Litre = 3,
+        Kutu = 4,
+        Metre = 5,
+        Saat = 6,
+        AdTl = 7,
+        Cift = 8,
+        MetreKare = 9,
+        MetreKup = 10,
+        Paket = 11,
+        Takım = 12,
+        Ton = 13,
+        Top = 14
     }
 
 
