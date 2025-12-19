@@ -12,6 +12,9 @@
 
         public decimal Qty { get; set; }                 // Her zaman pozitif
 
+        public decimal? UnitPrice { get; set; }   // özellikle PurchaseIn için
+        public decimal? LineTotal { get; set; }   // istersen UnitPrice * Qty (opsiyonel)
+
         public StockDirection Direction { get; set; }    // tinyint
         public StockMovementType MovementType { get; set; }
 

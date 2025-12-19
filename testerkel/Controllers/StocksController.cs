@@ -77,7 +77,8 @@ public class StocksController : Controller
         {
             WarehouseId = warehouseId,
             PageTitle = "Stok Girişi (Satınalma)",
-            SubmitText = "Stok Girişi Kaydet"
+            SubmitText = "Stok Girişi Kaydet",
+            TxnDate = DateTime.Today
         };
 
         await FillProductsAsync();
@@ -99,6 +100,7 @@ public class StocksController : Controller
             WarehouseId = vm.WarehouseId,
             ProductId = vm.ProductId,
             Qty = vm.Qty,
+            UnitPrice = vm.UnitPrice,
             Direction = StockDirection.In,
             MovementType = StockMovementType.PurchaseIn,
             TxnDate = vm.TxnDate
@@ -143,6 +145,7 @@ public class StocksController : Controller
             WarehouseId = vm.WarehouseId,
             ProductId = vm.ProductId,
             Qty = vm.Qty,
+            UnitPrice = vm.UnitPrice,
             Direction = StockDirection.Out,
             MovementType = StockMovementType.SalesOut,
             TxnDate = vm.TxnDate

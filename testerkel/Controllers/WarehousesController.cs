@@ -131,8 +131,7 @@ namespace testerkel.Controllers
                     Code = g.Key.Code,
                     Name = g.Key.Name,
                     Unit = g.Key.Unit.ToString(),
-                    Price = g.Key.Price,
-                    Quantity = g.Sum(x => x.Qty)
+                    Quantity = g.Sum(x => x.Direction == StockDirection.In ? x.Qty : -x.Qty)
                 };
 
             return query
@@ -140,6 +139,7 @@ namespace testerkel.Controllers
                 .OrderBy(p => p.Code)
                 .ToListAsync();
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetProducts(int warehouseId)
@@ -164,7 +164,6 @@ namespace testerkel.Controllers
                     Code = g.Key.Code,
                     Name = g.Key.Name,
                     Unit = g.Key.Unit.ToString(),
-                    Price = g.Key.Price,
                     Quantity = g.Sum(x => x.Qty)
                 };
 

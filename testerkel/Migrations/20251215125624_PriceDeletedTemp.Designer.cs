@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using testerkel.Data;
 
@@ -11,9 +12,11 @@ using testerkel.Data;
 namespace testerkel.Migrations
 {
     [DbContext(typeof(ErkelErpDbContext))]
-    partial class ErkelErpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215125624_PriceDeletedTemp")]
+    partial class PriceDeletedTemp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,6 +115,10 @@ namespace testerkel.Migrations
                     b.Property<string>("Name")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<byte>("Unit")
                         .HasColumnType("tinyint");

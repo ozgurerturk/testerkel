@@ -11,9 +11,6 @@ namespace testerkel.ViewModels.Product
 
         [MaxLength(50)]
         public required string Code { get; set; }
-
-        [Range(0, 999999999999)]
-        public decimal Price { get; set; } = decimal.Zero;
         public required UnitType Unit { get; set; }
         public IEnumerable<SelectListItem>? UnitTypes { get; set; }
     }

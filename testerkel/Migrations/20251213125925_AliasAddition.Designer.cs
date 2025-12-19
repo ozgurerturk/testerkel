@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using testerkel.Data;
 
@@ -11,9 +12,11 @@ using testerkel.Data;
 namespace testerkel.Migrations
 {
     [DbContext(typeof(ErkelErpDbContext))]
-    partial class ErkelErpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251213125925_AliasAddition")]
+    partial class AliasAddition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,6 +115,10 @@ namespace testerkel.Migrations
                     b.Property<string>("Name")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<byte>("Unit")
                         .HasColumnType("tinyint");
@@ -310,10 +317,6 @@ namespace testerkel.Migrations
                     b.Property<byte>("Direction")
                         .HasColumnType("tinyint");
 
-                    b.Property<decimal?>("LineTotal")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<byte>("MovementType")
                         .HasColumnType("tinyint");
 
@@ -333,10 +336,6 @@ namespace testerkel.Migrations
 
                     b.Property<DateTime>("TxnDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal?>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("WarehouseId")
                         .HasColumnType("int");
@@ -360,8 +359,8 @@ namespace testerkel.Migrations
 
                     b.Property<string>("Alias")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<byte>("UnitType")
                         .HasColumnType("tinyint");
@@ -372,206 +371,6 @@ namespace testerkel.Migrations
                         .IsUnique();
 
                     b.ToTable("UnitAliases");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Alias = "Ad",
-                            UnitType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Alias = "Ad.",
-                            UnitType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Alias = "Adet",
-                            UnitType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Alias = "Ad/Tl",
-                            UnitType = (byte)7
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Alias = "Kg",
-                            UnitType = (byte)2
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Alias = "Kg.",
-                            UnitType = (byte)2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Alias = "Kilogram",
-                            UnitType = (byte)2
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Alias = "Lt",
-                            UnitType = (byte)3
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Alias = "L",
-                            UnitType = (byte)3
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Alias = "Litre",
-                            UnitType = (byte)3
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Alias = "Kutu",
-                            UnitType = (byte)4
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Alias = "m",
-                            UnitType = (byte)5
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Alias = "m.",
-                            UnitType = (byte)5
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Alias = "Mt",
-                            UnitType = (byte)5
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Alias = "Mt.",
-                            UnitType = (byte)5
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Alias = "Metre",
-                            UnitType = (byte)5
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Alias = "m^2",
-                            UnitType = (byte)9
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Alias = "m2",
-                            UnitType = (byte)9
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Alias = "m3",
-                            UnitType = (byte)10
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Alias = "m^3",
-                            UnitType = (byte)10
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Alias = "Paket",
-                            UnitType = (byte)11
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Alias = "Takım",
-                            UnitType = (byte)12
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Alias = "Tk",
-                            UnitType = (byte)12
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Alias = "Tk.",
-                            UnitType = (byte)12
-                        },
-                        new
-                        {
-                            Id = 31,
-                            Alias = "Ton",
-                            UnitType = (byte)13
-                        },
-                        new
-                        {
-                            Id = 32,
-                            Alias = "T",
-                            UnitType = (byte)13
-                        },
-                        new
-                        {
-                            Id = 33,
-                            Alias = "Top",
-                            UnitType = (byte)14
-                        },
-                        new
-                        {
-                            Id = 34,
-                            Alias = "Saat",
-                            UnitType = (byte)6
-                        },
-                        new
-                        {
-                            Id = 35,
-                            Alias = "Sa",
-                            UnitType = (byte)6
-                        },
-                        new
-                        {
-                            Id = 36,
-                            Alias = "Sa.",
-                            UnitType = (byte)6
-                        },
-                        new
-                        {
-                            Id = 37,
-                            Alias = "St",
-                            UnitType = (byte)6
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Alias = "Çift",
-                            UnitType = (byte)8
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Alias = "Cift",
-                            UnitType = (byte)8
-                        });
                 });
 
             modelBuilder.Entity("testerkel.Models.Warehouse", b =>

@@ -5,6 +5,7 @@
         public int WarehouseId { get; set; }
         public int ProductId { get; set; }
         public decimal Qty { get; set; }
+        public decimal? UnitPrice { get; set; }
         public DateTime TxnDate { get; set; }
         public string? Note { get; set; }
 

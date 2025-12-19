@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Ayarlar";
+}
+
+<h2 class="mb-4">Ayarlar</h2>
+
+<div class="row g-3">
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Birimler (Unit Alias)</h5>
+                <p class="card-text">
+                    Ürün / stok işlemlerinde kullanılan birim kısaltmalarını yönetin (Kg, m2, Ad. vb.).
+                </p>
+                <a asp-controller="Settings"
+                   asp-action="Units"
+                   class="btn btn-outline-primary">
+                    Birimleri Yönet
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Vergiler</h5>
+                <p class="card-text">
+                    (İleride) KDV/ÖTV oranları ve vergi şablonları.
+                </p>
+                <button class="btn btn-outline-secondary" disabled>Yakında</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Para Birimleri</h5>
+                <p class="card-text">
+                    (İleride) Döviz kurları ve para birimi ayarları.
+                </p>
+                <button class="btn btn-outline-secondary" disabled>Yakında</button>
+            </div>
+        </div>
+    </div>
+
+</div>

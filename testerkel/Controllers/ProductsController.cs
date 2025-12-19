@@ -12,6 +12,8 @@ using testerkel.Data;
 using testerkel.Models;
 using testerkel.ViewModels;
 using testerkel.ViewModels.Product;
+using testerkel.ViewModels.Stock;
+using testerkel.ViewModels.Warehouse;
 
 namespace testerkel.Controllers
 {
@@ -54,7 +56,6 @@ namespace testerkel.Controllers
                 Id = product.Id,
                 Code = product.Code,
                 Name = product.Name,
-                Price = product.Price,
                 Unit = product.Unit
             };
 
@@ -90,8 +91,7 @@ namespace testerkel.Controllers
             var product = new Product
             {
                 Code = vm.Code,
-                Name = vm.Name,   // null olabilir
-                Price = vm.Price,
+                Name = vm.Name,
                 Unit = vm.Unit
             };
 
@@ -133,7 +133,6 @@ namespace testerkel.Controllers
 
             product.Code = vm.Code;
             product.Name = vm.Name;
-            product.Price = vm.Price;
             product.Unit = vm.Unit;
 
             await _context.SaveChangesAsync();
@@ -164,14 +163,12 @@ namespace testerkel.Controllers
             ws.Cell(1, 1).Value = "Malzeme Kodu";
             ws.Cell(1, 2).Value = "Malzeme İsmi";
             ws.Cell(1, 3).Value = "Birim";
-            ws.Cell(1, 4).Value = "Fiyat";
 
             ws.Row(1).Style.Font.Bold = true;
 
             ws.Cell(2, 1).Value = "MALZ-001";
             ws.Cell(2, 2).Value = "Örnek Malzeme";
             ws.Cell(2, 3).Value = "Adet";
-            ws.Cell(2, 4).Value = 5.00m;
 
             ws.Columns().AdjustToContents();
             
@@ -187,133 +184,278 @@ namespace testerkel.Controllers
         [HttpPost]
         public async Task<IActionResult> ImportFromExcel(IFormFile file)
         {
-            if (file == null || file.Length == 0)
+            try
             {
-                TempData["Error"] = "Lütfen bir excel dosyası seçin.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            if (!Path.HasExtension(file.FileName))
-            {
-                TempData["Error"] = "Geçersiz dosya uzantısı.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
-            {
-                TempData["Error"] = "Sadece .xlsx uzantılı dosyalar yüklenebilir.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var productsToAdd = new List<Product>();
-
-            using var stream = file.OpenReadStream();
-            using var workbook = new XLWorkbook(stream);
-
-            var worksheet = workbook.Worksheet(1); // İlk sayfa
-
-            if (worksheet.IsEmpty())
-            {
-                TempData["Error"] = "Excel dosyası boş veya ilk sayfa boş," +
-                    " lütfen dosyanın boş olmadığından veya ilk excel sayfasını doldurduğunuzdan emin olun.";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            var firstRowUsed = worksheet.FirstRowUsed();
-            var lastRowUsed = worksheet.LastRowUsed();
-
-            if (firstRowUsed == null || lastRowUsed == null)
-            {
-                TempData["Error"] = "Excel dosyası boş veya ilk sayfa boş," +
-                    " lütfen dosyanın boş olmadığından veya ilk excel sayfasını doldurduğunuzdan emin olun.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var headerRowNumber = firstRowUsed.RowNumber();
-
-            var codeHeader = worksheet.Cell(headerRowNumber, 1).GetString().Trim();
-            var nameHeader = worksheet.Cell(headerRowNumber, 2).GetString().Trim();
-            var unitHeader = worksheet.Cell(headerRowNumber, 3).GetString().Trim();
-            var priceHeader = worksheet.Cell(headerRowNumber, 4).GetString().Trim();
-
-            if (codeHeader != "Malzeme Kodu" || codeHeader != "Kod" ||
-                nameHeader != "Malzeme İsmi" || nameHeader != "İsim" || nameHeader != "Ad" || nameHeader != "Malzeme Adı" ||
-                unitHeader != "Birim" ||
-                priceHeader != "Fiyat")
-            {
-                TempData["Error"] = "Excel başlıkları beklenen formatta değil." +
-                    " Lütfen şablonu(|Malzeme Kodu|Malzeme İsmi|Birim|Fiyat|) kullanın.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var firstDataRow = headerRowNumber + 1;
-            var lastDataRow = lastRowUsed.RowNumber();
-
-            for (var row = firstDataRow; row <= lastDataRow; row++)
-            {
-                // If the entire row is empty, skip it
-                var usedCells = worksheet.Row(row).CellsUsed().Count();
-                if (usedCells == 0)
+                if (file == null || file.Length == 0)
                 {
-                    continue;
+                    TempData["Error"] = "Lütfen bir excel dosyası seçin.";
+                    return RedirectToAction(nameof(Index));
                 }
 
-                var codeCell = worksheet.Cell(row, 1);
-                if (codeCell.IsEmpty() || string.IsNullOrWhiteSpace(codeCell.GetString()))
+                if (!Path.HasExtension(file.FileName) ||
+                    !Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
                 {
-                    // If code is empty, skip this row
-                    continue;
+                    TempData["Error"] = "Sadece .xlsx uzantılı dosyalar yüklenebilir.";
+                    return RedirectToAction(nameof(Index));
                 }
 
-                var code = codeCell.GetString().Trim();
-                var name = worksheet.Cell(row, 2).GetString().Trim();
-                var unitStr = worksheet.Cell(row, 3).GetString().Trim();
-                var priceCell = worksheet.Cell(row, 4);
+                using var stream = file.OpenReadStream();
+                using var workbook = new XLWorkbook(stream);
 
-                if (!Enum.TryParse(unitStr, out UnitType unit))
+                var worksheet = workbook.Worksheet(1);
+                if (worksheet.IsEmpty())
                 {
-                    TempData["Error"] = $"Geçersiz birim türü '{unitStr}' satır {row}." +
-                        " Lütfen şablondaki birim türlerini kullanın.";
-                    continue;
+                    TempData["Error"] = "Excel dosyası boş veya ilk sayfa boş.";
+                    return RedirectToAction(nameof(Index));
                 }
 
-                if (priceCell.IsEmpty())
+                var firstRowUsed = worksheet.FirstRowUsed();
+                var lastRowUsed = worksheet.LastRowUsed();
+                if (firstRowUsed == null || lastRowUsed == null)
                 {
-                    TempData["Error"] = $"Fiyat boş olamaz satır {row}.";
-                    continue;
+                    TempData["Error"] = "Excel dosyası boş veya ilk sayfa boş.";
+                    return RedirectToAction(nameof(Index));
                 }
 
-                if (!priceCell.TryGetValue(out decimal priceValue))
+                var headerRowNumber = firstRowUsed.RowNumber();
+
+                var codeHeader = worksheet.Cell(headerRowNumber, 1).GetString().Trim();
+                var nameHeader = worksheet.Cell(headerRowNumber, 2).GetString().Trim();
+                var unitHeader = worksheet.Cell(headerRowNumber, 3).GetString().Trim();
+
+                if ((codeHeader != "Malzeme Kodu" && codeHeader != "Kod") ||
+                    (nameHeader != "Malzeme İsmi" && nameHeader != "İsim" && nameHeader != "Ad" && nameHeader != "Malzeme Adı") ||
+                    unitHeader != "Birim")
                 {
-                    TempData["Error"] = $"Geçersiz fiyat değeri '{priceCell.GetString()}' satır {row}.";
-                    continue;
+                    TempData["Error"] = "Excel başlıkları beklenen formatta değil. Lütfen şablonu kullanın.";
+                    return RedirectToAction(nameof(Index));
                 }
 
-                var product = new Product
+                // Rapor kolonlarını ekle (Durum + Hata)
+                var lastCol = worksheet.LastColumnUsed()?.ColumnNumber() ?? 3;
+                var statusCol = lastCol + 1;
+                var errorCol = lastCol + 2;
+
+                worksheet.Cell(headerRowNumber, statusCol).Value = "Durum";
+                worksheet.Cell(headerRowNumber, errorCol).Value = "Hata Notu";
+                worksheet.Row(headerRowNumber).Style.Font.Bold = true;
+
+                // DB'de olan kodları tek seferde çek (unique hatasını burada yakalarız)
+                var incomingCodes = new List<string>();
+
+                var firstDataRow = headerRowNumber + 1;
+                var lastDataRow = lastRowUsed.RowNumber();
+
+                for (var row = firstDataRow; row <= lastDataRow; row++)
                 {
-                    Code = code,
-                    Name = string.IsNullOrEmpty(name) ? null : name,
-                    Unit = unit,
-                    Price = priceValue
-                };
+                    var code = worksheet.Cell(row, 1).GetString().Trim();
+                    if (!string.IsNullOrWhiteSpace(code))
+                        incomingCodes.Add(code);
+                }
 
-                productsToAdd.Add(product);
-            }
+                var distinctIncoming = incomingCodes
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
 
-            if (productsToAdd.Count == 0)
-            {
-                TempData["Error"] = "Excel dosyasında eklenebilecek geçerli ürün bulunamadı.";
+                var existingCodes = await _context.Products.AsNoTracking()
+                    .Where(p => distinctIncoming.Contains(p.Code))
+                    .Select(p => p.Code)
+                    .ToListAsync();
+
+                var existingSet = new HashSet<string>(existingCodes, StringComparer.OrdinalIgnoreCase);
+
+                // Excel içi duplicate kontrolü için
+                var seenCodesInExcel = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                var productsToAdd = new List<Product>();
+                var hasAnyError = false;
+
+                for (var row = firstDataRow; row <= lastDataRow; row++)
+                {
+                    // tamamen boş satır skip
+                    if (worksheet.Row(row).CellsUsed().Count() == 0)
+                        continue;
+
+                    var codeCell = worksheet.Cell(row, 1);
+                    var nameCell = worksheet.Cell(row, 2);
+                    var unitCell = worksheet.Cell(row, 3);
+
+                    var code = codeCell.GetString().Trim();
+                    var name = nameCell.GetString().Trim();
+                    var unitStr = unitCell.GetString().Trim();
+
+                    var errors = new List<string>();
+
+                    // Kod zorunlu
+                    if (string.IsNullOrWhiteSpace(code))
+                    {
+                        errors.Add("Kod boş olamaz.");
+                        // Kod hücresini kırmızı yap
+                        codeCell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                    }
+                    else
+                    {
+                        // Excel içi duplicate
+                        if (!seenCodesInExcel.Add(code))
+                        {
+                            errors.Add($"Excel içinde tekrar eden kod: {code}");
+                            codeCell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                        }
+
+                        // DB duplicate
+                        if (existingSet.Contains(code))
+                        {
+                            errors.Add($"Bu kod zaten sistemde var: {code}");
+                            codeCell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                        }
+                    }
+
+                    // Unit alias çözümle
+                    UnitType? resolvedUnit = null;
+                    if (!string.IsNullOrWhiteSpace(unitStr))
+                    {
+                        resolvedUnit = await ResolveUnitTypeAsync(unitStr);
+                        if (resolvedUnit == null)
+                        {
+                            errors.Add($"Birim çözümlenemedi: '{unitStr}'");
+                            unitCell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                        }
+                    }
+                    else
+                    {
+                        errors.Add("Birim boş olamaz.");
+                        unitCell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                    }
+
+                    if (errors.Count > 0)
+                    {
+                        hasAnyError = true;
+
+                        // Satırı kırmızıya boya (tam satır)
+                        worksheet.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#ffe5e5");
+
+                        worksheet.Cell(row, statusCol).Value = "HATALI";
+                        worksheet.Cell(row, statusCol).Style.Font.FontColor = XLColor.DarkRed;
+                        worksheet.Cell(row, statusCol).Style.Font.Bold = true;
+
+                        worksheet.Cell(row, errorCol).Value = string.Join(" | ", errors);
+                        continue;
+                    }
+
+                    // Doğru satır
+                    worksheet.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#eaffea");
+                    worksheet.Cell(row, statusCol).Value = "OK";
+                    worksheet.Cell(row, statusCol).Style.Font.FontColor = XLColor.DarkGreen;
+                    worksheet.Cell(row, statusCol).Style.Font.Bold = true;
+
+                    worksheet.Cell(row, errorCol).Value = "";
+
+                    productsToAdd.Add(new Product
+                    {
+                        Code = code,
+                        Name = string.IsNullOrWhiteSpace(name) ? null : name,
+                        Unit = resolvedUnit!.Value
+                    });
+                }
+
+                worksheet.Columns().AdjustToContents();
+
+                // Hata varsa: raporlu Excel indir
+                if (hasAnyError)
+                {
+                    using var outStream = new MemoryStream();
+                    workbook.SaveAs(outStream);
+                    var content = outStream.ToArray();
+
+                    var fileName = $"MalzemeImportRaporu_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+                    return File(content,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        fileName);
+                }
+
+                // Hata yoksa: DB kaydet
+                if (productsToAdd.Count == 0)
+                {
+                    TempData["Error"] = "Excel dosyasında eklenebilecek geçerli ürün bulunamadı.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                await _context.Products.AddRangeAsync(productsToAdd);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"{productsToAdd.Count} ürün başarıyla eklendi.";
                 return RedirectToAction(nameof(Index));
             }
-
-            await _context.Products.AddRangeAsync(productsToAdd);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = $"{productsToAdd.Count} ürün başarıyla eklendi.";
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while importing products from excel.");
+                TempData["Error"] = "Excel içe aktarma sırasında bir hata oluştu.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> PriceInfo(int? id)
+        {
+            if (id == null) return NotFound();
+            var product = await _context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null) return NotFound();
+
+            var averagePrice = await _context.StockTxns
+                .Where(st =>
+                st.ProductId == product.Id &&
+                st.Direction == StockDirection.In &&
+                st.UnitPrice != null)
+                .GroupBy(_ => 1)
+                .Select(g => g.Sum(x => x.Qty * x.UnitPrice) / g.Sum(x => x.Qty))
+                .FirstOrDefaultAsync();
+
+            var lastPrice = await _context.StockTxns
+                .Where(st =>
+                    st.ProductId == product.Id &&
+                    st.Direction == StockDirection.In &&
+                    st.UnitPrice != null)
+                .OrderByDescending(x => x.TxnDate)
+                .Select(x => x.UnitPrice)
+                .FirstOrDefaultAsync();
+
+            var stockMovements = await _context.StockTxns.AsNoTracking()
+                .Where(x => x.ProductId == product.Id)
+                .Include(x => x.Warehouse)
+                .OrderByDescending(x => x.TxnDate)
+                .Select(x => new StockTxnRowVm
+                {
+                    TxnDate = x.TxnDate,
+                    Direction = x.Direction,
+                    MovementType = x.MovementType,
+                    Qty = x.Qty,
+                    UnitPrice = x.UnitPrice,
+                    WarehouseId = x.WarehouseId,
+                    WarehouseName = x.Warehouse != null ? x.Warehouse.Name! : "",
+                    RefModule = x.RefModule,
+                    RefId = x.RefId,
+                    Note = x.RefModule,
+                    ProductId = x.ProductId
+                })
+                .ToListAsync();
+
+
+            var vm = new ProductPriceInfoVm
+            {
+                Code = product.Code,
+                Id = product.Id,
+                Name = product.Name,
+                Unit = product.Unit,
+                PriceAverage = averagePrice,
+                LastPrice = lastPrice,
+                MovementHistory = stockMovements
+            };
+            return View(vm); // @model ProductPriceInfoVm
+        }
 
         // --- Helper ---
 
@@ -339,6 +481,38 @@ namespace testerkel.Controllers
                     Text = u.ToString(),
                     Selected = (vm.Unit == u)
                 })];
+        }
+
+        private async Task<UnitType?> ResolveUnitTypeAsync(string unitStr)
+        {
+            if (string.IsNullOrWhiteSpace(unitStr))
+                return null;
+
+            var raw = unitStr.Trim();
+
+            // Normalize: boşluk, nokta, büyük/küçük farkı kaldır
+            var normalized = raw
+                .Replace(" ", "")
+                .Replace(".", "")
+                .ToLowerInvariant();
+
+            // 1) Alias tablosundan ara
+            var unitFromAlias = await _context.UnitAliases
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                    x.Alias
+                     .Replace(" ", "")
+                     .Replace(".", "")
+                     .ToLower() == normalized);
+
+            if (unitFromAlias != null)
+                return unitFromAlias.UnitType;
+
+            // 2) Fallback: enum adı yazılmış olabilir (Kilogram, Metre vb.)
+            if (Enum.TryParse<UnitType>(raw, true, out var enumUnit))
+                return enumUnit;
+
+            return null;
         }
     }
 }

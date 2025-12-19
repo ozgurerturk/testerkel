@@ -1,0 +1,90 @@
+﻿@model List<testerkel.Models.UnitAlias>
+@using testerkel.Utility
+
+@{
+    ViewData["Title"] = "Ayarlar - Birimler";
+}
+
+<h2 class="mb-3">Birim Alias Ayarları</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Yeni Alias Ekle</h5>
+
+        <form asp-controller="Settings" asp-action="CreateUnitAlias" method="post" class="row g-2">
+            @Html.AntiForgeryToken()
+
+            <div class="col-md-4">
+                <label class="form-label">Birim (UnitType)</label>
+                <select name="UnitType" class="form-select" asp-items="ViewBag.UnitTypes">
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Alias</label>
+                <input name="Alias" class="form-control" placeholder="Örn: Kg. / m^2 / Ad." />
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Ekle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Mevcut Alias’lar</h5>
+
+        <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 180px;">UnitType</th>
+                        <th>Alias</th>
+                        <th style="width: 160px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.UnitType</td>
+                            <td>@item.Alias</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-controller="Settings"
+                                   asp-action="EditUnitAlias"
+                                   asp-route-id="@item.Id">
+                                    Düzenle
+                                </a>
+
+                                <form asp-controller="Settings"
+                                      asp-action="DeleteUnitAlias"
+                                      method="post"
+                                      class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Silinsin mi?');">
+                                        Sil
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

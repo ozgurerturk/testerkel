@@ -8,6 +8,5 @@ namespace testerkel.Models
         public string Code { get; set; } = "";
         public string? Name { get; set; }
         public UnitType Unit { get; set; }
-        public decimal Price { get; set; }
     }
 }

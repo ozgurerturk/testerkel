@@ -134,7 +134,6 @@
                     html += '<th>Kod</th>';
                     html += '<th>Ürün Adı</th>';
                     html += '<th>Birim</th>';
-                    html += '<th class="text-end">Fiyat</th>';
                     html += '<th class="text-end">Miktar</th>';
                     html += '</tr>';
                     html += '</thead>';
@@ -145,7 +144,6 @@
                         html += '<td>' + (p.code ?? '') + '</td>';
                         html += '<td>' + (p.name ?? '') + '</td>';
                         html += '<td>' + (p.unit ?? '') + '</td>';
-                        html += '<td class="text-end">' + (p.price != null ? Number(p.price).toFixed(2) : '') + '</td>';
                         html += '<td class="text-end">' + (p.quantity != null ? p.quantity : '') + '</td>';
                         html += '</tr>';
                     });

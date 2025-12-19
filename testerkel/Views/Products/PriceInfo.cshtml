@@ -1,0 +1,108 @@
+﻿@model testerkel.ViewModels.Product.ProductPriceInfoVm
+
+@{
+    ViewData["Title"] = "Fiyat Bilgisi";
+}
+
+<div id="product-priceinfo-page">
+
+    <h1 class="mb-4">Fiyat Bilgisi</h1>
+
+    <!-- ===================== -->
+    <!--  ÖZET KARTLAR -->
+    <!-- ===================== -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-3">
+            <div class="card shadow-sm h-100 border-start border-4 border-primary">
+                <div class="card-body">
+                    <div class="text-muted small">Ortalama Alış Fiyatı</div>
+                    <div class="fs-4 fw-semibold">
+                        @(Model.PriceAverage?.ToString("N2") ?? "—") TL
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-3">
+            <div class="card shadow-sm h-100 border-start border-4 border-success">
+                <div class="card-body">
+                    <div class="text-muted small">Son Alış Fiyatı</div>
+                    <div class="fs-4 fw-semibold">
+                        @(Model.LastPrice?.ToString("N2") ?? "—") TL
+                    </div>
+                    <div class="text-muted small">
+                        Son kayıt
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!--  STOK HAREKETLERİ -->
+    <!-- ===================== -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Stok Hareketleri</h5>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-bordered table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">Depo</th>
+                        <th class="text-center">Hareket</th>
+                        <th class="text-center">Miktar</th>
+                        <th class="text-center">Birim Fiyat</th>
+                        <th class="text-center">Tarih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MovementHistory.Any())
+                    {
+                        foreach (var item in Model.MovementHistory)
+                        {
+                            <tr>
+                                <td>@item.WarehouseName</td>
+                                <td class="text-center">
+                                    @switch (item.MovementType)
+                                    {
+                                        case StockMovementType.PurchaseIn:
+                                            <span class="badge bg-success">Stok Giriş</span>
+                                            break;
+                                        case StockMovementType.TransferIn:
+                                            <span class="badge bg-info">Transfer Giriş</span>
+                                            break;
+                                        case StockMovementType.ConsumptionOut:
+                                            <span class="badge bg-warning text-dark">Sarf</span>
+                                            break;
+                                        case StockMovementType.TransferOut:
+                                            <span class="badge bg-secondary">Transfer Çıkışı</span>
+                                            break;
+                                        case StockMovementType.SalesOut:
+                                            <span class="badge bg-danger">Stok Çıkışı</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center">@item.Qty.ToString("N2")</td>
+                                <td class="text-center">
+                                    @(item.UnitPrice?.ToString("N2") ?? "—")
+                                </td>
+                                <td class="text-center">@item.TxnDate.ToString("g")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                Kayıt bulunamadı.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

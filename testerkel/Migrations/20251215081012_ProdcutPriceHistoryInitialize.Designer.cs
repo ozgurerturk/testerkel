@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using testerkel.Data;
 
@@ -11,9 +12,11 @@ using testerkel.Data;
 namespace testerkel.Migrations
 {
     [DbContext(typeof(ErkelErpDbContext))]
-    partial class ErkelErpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215081012_ProdcutPriceHistoryInitialize")]
+    partial class ProdcutPriceHistoryInitialize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,6 +116,10 @@ namespace testerkel.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<byte>("Unit")
                         .HasColumnType("tinyint");
 
@@ -122,6 +129,36 @@ namespace testerkel.Migrations
                         .IsUnique();
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("testerkel.Models.ProductPriceHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId", "EndDate");
+
+                    b.ToTable("ProductPriceHistories");
                 });
 
             modelBuilder.Entity("testerkel.Models.PurchaseOrder", b =>
@@ -310,10 +347,6 @@ namespace testerkel.Migrations
                     b.Property<byte>("Direction")
                         .HasColumnType("tinyint");
 
-                    b.Property<decimal?>("LineTotal")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<byte>("MovementType")
                         .HasColumnType("tinyint");
 
@@ -333,10 +366,6 @@ namespace testerkel.Migrations
 
                     b.Property<DateTime>("TxnDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal?>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("WarehouseId")
                         .HasColumnType("int");
@@ -630,6 +659,17 @@ namespace testerkel.Migrations
                         .IsRequired();
 
                     b.Navigation("Consumption");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("testerkel.Models.ProductPriceHistory", b =>
+                {
+                    b.HasOne("testerkel.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
                 });
