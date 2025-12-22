@@ -1,19 +1,11 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2019.Excel.RichData;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using testerkel.Data;
 using testerkel.Models;
-using testerkel.ViewModels;
 using testerkel.ViewModels.Product;
 using testerkel.ViewModels.Stock;
-using testerkel.ViewModels.Warehouse;
 
 namespace testerkel.Controllers
 {
@@ -29,15 +21,82 @@ namespace testerkel.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            // View: @model IEnumerable<testerkel.Models.Product>
-            var products = await _context.Products
-                .AsNoTracking()
-                .OrderBy(p => p.Code)
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Data()
+        {
+            var draw = Request.Form["draw"].FirstOrDefault();
+
+            var start = int.TryParse(Request.Form["start"].FirstOrDefault(), out var s) ? s : 0;
+            var length = int.TryParse(Request.Form["length"].FirstOrDefault(), out var l) ? l : 25;
+
+            var searchValue = Request.Form["search[value]"].FirstOrDefault()?.Trim();
+
+            var sortColIndex = int.TryParse(Request.Form["order[0][column]"].FirstOrDefault(), out var ci) ? ci : 0;
+            var sortDir = Request.Form["order[0][dir]"].FirstOrDefault() ?? "asc";
+
+            var sortCol = Request.Form[$"columns[{sortColIndex}][data]"].FirstOrDefault() ?? "code";
+
+            var query = _context.Products.AsNoTracking();
+
+            var recordsTotal = await query.CountAsync();
+
+            if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                var trCollation = "Turkish_CI_AS";
+
+                query = query.Where(x =>
+                    EF.Functions.Like(
+                        EF.Functions.Collate(x.Code, trCollation),
+                        $"%{searchValue}%"
+                    )
+                    ||
+                    (x.Name != null && EF.Functions.Like(
+                        EF.Functions.Collate(x.Name, trCollation),
+                        $"%{searchValue}%"
+                    ))
+                );
+            }
+
+            var recordsFiltered = await query.CountAsync();
+
+            // Sorting
+            if (sortCol == "code")
+                query = sortDir == "asc" ? query.OrderBy(x => x.Code) : query.OrderByDescending(x => x.Code);
+            else if (sortCol == "name")
+                query = sortDir == "asc" ? query.OrderBy(x => x.Name) : query.OrderByDescending(x => x.Name);
+            else if (sortCol == "unit")
+                query = sortDir == "asc" ? query.OrderBy(x => x.Unit) : query.OrderByDescending(x => x.Unit);
+            else
+                query = query.OrderBy(x => x.Code);
+
+            var data = await query
+                .Skip(start)
+                .Take(length)
+                .Select(x => new
+                {
+                    id = x.Id,
+                    code = x.Code,
+                    name = string.IsNullOrWhiteSpace(x.Name) ? "-" : x.Name,
+                    unit = x.Unit.ToString(),
+                    actions =
+                        $"<a class='btn btn-sm btn-outline-secondary me-1' href='/Products/Details/{x.Id}'>Detay/Düzenle</a>" +
+                        $"<a class='btn btn-sm btn-outline-info me-1' href='/Products/PriceInfo/{x.Id}'>Fiyat Bilgisi</a>" +
+                        $"<button type='button' class='btn btn-sm btn-outline-danger js-product-delete' data-id='{x.Id}'>Sil</button>"
+                })
                 .ToListAsync();
 
-            return View(products);
+            return Json(new
+            {
+                draw,
+                recordsTotal,
+                recordsFiltered,
+                data
+            });
         }
 
         // GET: Products/Details/5

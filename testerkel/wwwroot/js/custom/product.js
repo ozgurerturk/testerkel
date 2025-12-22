@@ -67,6 +67,49 @@ function initProductIndexPage() {
             });
         });
     });
+
+    var dt = new DataTable("#productTable", {
+        processing: true,
+        serverSide: true,
+        searching: true,
+        ordering: true,
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100],
+
+        ajax: {
+            url: "/Products/Data",
+            type: "POST"
+        },
+
+        columns: [
+            { data: "code" },
+            { data: "name" },
+            { data: "unit" },
+            { data: "actions", orderable: false, searchable: false }
+        ],
+
+        language: {
+            search: "Ara:",
+            emptyTable: "Gösterilecek kayıt yok",
+            info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+            infoEmpty: "Kayıt yok",
+            infoFiltered: "(_MAX_ kayıttan filtrelendi)",
+            lengthMenu: "Sayfada _MENU_ kayıt göster",
+            loadingRecords: "Yükleniyor...",
+            processing: "İşleniyor...",
+            zeroRecords: "Eşleşen kayıt bulunamadı",
+            paginate: {
+                first: "İlk Sayfa",
+                last: "Son Sayfa",
+                next: "Sonraki",
+                previous: "Önceki"
+            },
+            aria: {
+                orderable: ": sütunu sıralamak için tıklayın",
+                orderableReverse: ": sütunu sıralamayı kaldırmak için tıklayın"
+            }
+        }
+    });
 }
 
 // Sayfa yüklendiğinde sadece "ilgili" init fonksiyonlarını çağır
