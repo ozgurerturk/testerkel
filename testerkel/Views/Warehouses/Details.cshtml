@@ -41,18 +41,6 @@
 <ul class="nav nav-tabs mb-3" id="warehouseTabs" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link active"
-                id="info-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#info"
-                type="button"
-                role="tab"
-                aria-controls="info"
-                aria-selected="true">
-            Depo Bilgileri
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link"
                 id="products-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#products"
@@ -63,11 +51,23 @@
             Depodaki Ürünler
         </button>
     </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link"
+                id="info-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#info"
+                type="button"
+                role="tab"
+                aria-controls="info"
+                aria-selected="true">
+            Depo Bilgileri
+        </button>
+    </li>
 </ul>
 
 <div class="tab-content" id="warehouseTabContent">
     <!-- Depo Bilgileri -->
-    <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+    <div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab">
         <form asp-action="Edit" method="post" id="warehouseForm">
             <input type="hidden" asp-for="Id" />
 
@@ -93,7 +93,7 @@
     </div>
 
     <!-- Depodaki Ürünler -->
-    <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+    <div class="tab-pane fade show active" id="products" role="tabpanel" aria-labelledby="products-tab">
         <div class="mt-3">
             <h5>Depodaki Ürünler</h5>
             <div id="warehouseProductsContainer" class="mt-2">
@@ -111,7 +111,6 @@
     <script src="~/js/custom/warehouse.js"></script>
 
     <script>
-        // Sadece bu view için: hem edit toggle hem product tab çalışsın
         warehouseDetailsInit({
             formId: "warehouseForm",
             editButtonId: "btnEdit",

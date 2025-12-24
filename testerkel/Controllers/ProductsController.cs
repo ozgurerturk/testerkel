@@ -482,7 +482,7 @@ namespace testerkel.Controllers
                 .Select(x => x.UnitPrice)
                 .FirstOrDefaultAsync();
 
-            var stockMovements = await _context.StockTxns.AsNoTracking()
+            var stockMovements = await _context.StockTxns
                 .Where(x => x.ProductId == product.Id)
                 .Include(x => x.Warehouse)
                 .OrderByDescending(x => x.TxnDate)

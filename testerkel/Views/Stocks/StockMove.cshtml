@@ -15,40 +15,94 @@
 
     <input type="hidden" asp-for="WarehouseId" />
 
-    <div class="col-md-6">
-        <label asp-for="ProductId" class="form-label">Malzemeler</label>
-        <select asp-for="ProductId"
-                class="form-select"
-                asp-items="ViewBag.Products">
-            <option value="">Ürün seçiniz...</option>
-        </select>
-        <span asp-validation-for="ProductId" class="text-danger"></span>
+    <h5>Depo Adı: @ViewBag.WarehouseName</h5>
+    <br/>
+
+    <button class="btn btn-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStocks" aria-expanded="false" aria-controls="collapseStocks">
+        Depo durumunu göster/gizle
+    </button>
+
+    <div class="collapse" id="collapseStocks">
+        <div class="card">
+            <div class="card-header">
+                <h4>Depodaki Mevcut Ürünler</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <table class="table table-sm table-hover table-bordered table-striped mb-0" id="warehouseTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Kod</th>
+                                <th>Ürün Adı</th>
+                                <th>Birim</th>
+                                <th class="text-end">Mevcut Miktar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var product in ViewBag.WarehouseProducts)
+                                {
+                                    <tr>
+                                        <td>@product.Code</td>
+                                        <td>@product.Name</td>
+                                        <td>@product.Unit</td>
+                                        <td class="text-end">@product.Qty</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <a target="_blank" rel="noopener noreferrer" href="@Url.Action("Details", "Warehouses", new { id = Model.WarehouseId })">Depo Detay Sayfasında Git</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-3">
-        <label asp-for="Qty" class="form-label">Miktar</label>
-        <input asp-for="Qty" class="form-control" />
-        <span asp-validation-for="Qty" class="text-danger"></span>
+    
+    <div class="row mt-2">
+        <div class="col-md-8">
+            <label asp-for="ProductId" class="form-label">Malzemeler</label>
+            <select asp-for="ProductId"
+                    class="form-select"
+                    id="productSelect">
+                <option value="">Ürün seçiniz...</option>
+            </select>
+            <span asp-validation-for="ProductId" class="text-danger"></span>
+        </div>
     </div>
 
-    <div class="col-md-3">
-        <label asp-for="UnitPrice" class="form-label">Birim Fiyatı</label>
-        <input asp-for="UnitPrice" class="form-control" />
-        <span asp-validation-for="UnitPrice" class="text-danger"></span>
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <label asp-for="Qty" class="form-label">Miktar</label>
+            <input asp-for="Qty" class="form-control" />
+            <span asp-validation-for="Qty" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="UnitPrice" class="form-label">Birim Fiyatı</label>
+            <input asp-for="UnitPrice" class="form-control" />
+            <span asp-validation-for="UnitPrice" class="text-danger"></span>
+        </div>
     </div>
 
-    <div class="col-md-3">
-        <label asp-for="TxnDate" class="form-label">Tarih / Saat</label>
-        <input asp-for="TxnDate"
-               class="form-control"
-               type="datetime-local" />
-        <span asp-validation-for="TxnDate" class="text-danger"></span>
+    <div class="row">
+        <div class="col-md-3">
+            <label asp-for="TxnDate" class="form-label">Tarih / Saat</label>
+            <input asp-for="TxnDate"
+                   class="form-control"
+                   type="datetime-local" />
+            <span asp-validation-for="TxnDate" class="text-danger"></span>
+        </div>
     </div>
 
-    <div class="col-12">
-        <label asp-for="Note" class="form-label">Not</label>
-        <textarea asp-for="Note" class="form-control" rows="2"></textarea>
-        <span asp-validation-for="Note" class="text-danger"></span>
+    <div class="row">
+        <div class="col-12">
+            <label asp-for="Note" class="form-label">Not</label>
+            <textarea asp-for="Note" class="form-control" rows="2"></textarea>
+            <span asp-validation-for="Note" class="text-danger"></span>
+        </div>
     </div>
 
     <div class="col-12 d-flex gap-2">
@@ -67,4 +121,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/custom/stocks.js"></script>
 }

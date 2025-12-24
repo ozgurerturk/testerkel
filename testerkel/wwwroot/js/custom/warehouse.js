@@ -112,53 +112,54 @@
             return;
         }
 
-        productsTab.addEventListener("shown.bs.tab", function () {
-            if (loaded) return;
+        //productsTab.addEventListener("shown.bs.tab", function () {
+        //    if (loaded) return;
 
-            var url = getProductsUrl + "?warehouseId=" + warehouseId;
+            
+        //});
 
-            fetch(url)
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    loaded = true;
+        var url = getProductsUrl + "?warehouseId=" + warehouseId;
 
-                    if (!data || !data.length) {
-                        container.innerHTML = '<div class="text-muted">Bu depoda ürün bulunmuyor.</div>';
-                        return;
-                    }
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                loaded = true;
 
-                    var html = '';
-                    html += '<table class="table table-sm table-bordered table-striped mb-0">';
-                    html += '<thead class="table-light">';
+                if (!data || !data.length) {
+                    container.innerHTML = '<div class="text-muted">Bu depoda ürün bulunmuyor.</div>';
+                    return;
+                }
+
+                var html = '';
+                html += '<table class="table table-sm table-bordered table-striped mb-0">';
+                html += '<thead class="table-light">';
+                html += '<tr>';
+                html += '<th>Kod</th>';
+                html += '<th>Ürün Adı</th>';
+                html += '<th>Birim</th>';
+                html += '<th class="text-end">Miktar</th>';
+                html += '</tr>';
+                html += '</thead>';
+                html += '<tbody>';
+
+                data.forEach(function (p) {
                     html += '<tr>';
-                    html += '<th>Kod</th>';
-                    html += '<th>Ürün Adı</th>';
-                    html += '<th>Birim</th>';
-                    html += '<th class="text-end">Miktar</th>';
+                    html += '<td>' + (p.code ?? '') + '</td>';
+                    html += '<td>' + (p.name ?? '') + '</td>';
+                    html += '<td>' + (p.unit ?? '') + '</td>';
+                    html += '<td class="text-end">' + (p.quantity != null ? p.quantity : '') + '</td>';
                     html += '</tr>';
-                    html += '</thead>';
-                    html += '<tbody>';
-
-                    data.forEach(function (p) {
-                        html += '<tr>';
-                        html += '<td>' + (p.code ?? '') + '</td>';
-                        html += '<td>' + (p.name ?? '') + '</td>';
-                        html += '<td>' + (p.unit ?? '') + '</td>';
-                        html += '<td class="text-end">' + (p.quantity != null ? p.quantity : '') + '</td>';
-                        html += '</tr>';
-                    });
-
-                    html += '</tbody></table>';
-
-                    container.innerHTML = html;
-                })
-                .catch(function () {
-                    container.innerHTML = '<div class="text-danger">Ürünler yüklenirken bir hata oluştu.</div>';
                 });
-        });
+
+                html += '</tbody></table>';
+
+                container.innerHTML = html;
+            })
+            .catch(function () {
+                container.innerHTML = '<div class="text-danger">Ürünler yüklenirken bir hata oluştu.</div>';
+            });
     };
 
-    // Bu sayfaya özel toplu init (Details sayfasında sadece bunu çağırırsın)
     window.warehouseDetailsInit = function (options) {
         options = options || {};
         window.initWarehouseEditToggle(options);

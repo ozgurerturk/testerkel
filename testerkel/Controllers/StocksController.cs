@@ -81,7 +81,9 @@ public class StocksController : Controller
             TxnDate = DateTime.Today
         };
 
-        await FillProductsAsync();
+        ViewBag.WarehouseName = (await _context.Warehouses.FindAsync(warehouseId))?.Name;
+
+        await FillWarehouseProducts(warehouseId);
         return View("/Views/Stocks/StockMove.cshtml", vm);
     }
 
@@ -91,7 +93,6 @@ public class StocksController : Controller
     {
         if (!ModelState.IsValid)
         {
-            await FillProductsAsync();
             return View("/Views/Stocks/StockMove.cshtml", vm);
         }
 
@@ -117,7 +118,7 @@ public class StocksController : Controller
     //  STOK ÇIKIŞI (SalesOut)
     // ---------------------------------------------------------
     [HttpGet]
-    public async Task<IActionResult> SalesOut(int warehouseId)
+    public IActionResult SalesOut(int warehouseId)
     {
         var vm = new StockTxnVm
         {
@@ -126,7 +127,6 @@ public class StocksController : Controller
             SubmitText = "Stok Çıkışını Kaydet"
         };
 
-        await FillProductsAsync();
         return View("/Views/Stocks/StockMove.cshtml", vm);
     }
 
@@ -136,7 +136,6 @@ public class StocksController : Controller
     {
         if (!ModelState.IsValid)
         {
-            await FillProductsAsync();
             return View("/Views/Stocks/StockMove.cshtml", vm);
         }
 
@@ -162,7 +161,7 @@ public class StocksController : Controller
     //  SARF / TÜKETİM (ConsumptionOut)
     // ---------------------------------------------------------
     [HttpGet]
-    public async Task<IActionResult> ConsumptionOut(int warehouseId)
+    public IActionResult ConsumptionOut(int warehouseId)
     {
         var vm = new StockTxnVm
         {
@@ -171,7 +170,6 @@ public class StocksController : Controller
             SubmitText = "Sarf Kaydet"
         };
 
-        await FillProductsAsync();
         return View("/Views/Stocks/StockMove.cshtml", vm);
     }
 
@@ -181,7 +179,6 @@ public class StocksController : Controller
     {
         if (!ModelState.IsValid)
         {
-            await FillProductsAsync();
             return View("/Views/Stocks/StockMove.cshtml", vm);
         }
 
@@ -295,19 +292,38 @@ public class StocksController : Controller
     // ---------------------------------------------------------
     //  DROPDOWN İÇİN ÜRÜN LİSTESİ DOLDURMA
     // ---------------------------------------------------------
-    private async Task FillProductsAsync()
+    [HttpPost]
+    // DROPDOWN İÇİN ÜRÜN LİSTESİ DOLDURMA
+    [HttpPost]
+    public async Task<IActionResult> FillProducts(string searchTerm)
     {
-        var products = await _context.Products
+        searchTerm = (searchTerm ?? "").Trim();
+
+        var q = _context.Products.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            // Column'lara Turkish_CI_AS uygula (sadece bu sorgu için)
+            q = q.Where(p =>
+                EF.Functions.Collate(p.Code, "Turkish_CI_AS").Contains(searchTerm) ||
+                (p.Name != null && EF.Functions.Collate(p.Name, "Turkish_CI_AS").Contains(searchTerm)));
+        }
+
+        var list = await q
             .OrderBy(p => p.Code)
+            .Select(p => new
+            {
+                id = p.Id,
+                text = p.Code + " - " + (p.Name ?? "")
+            })
+            .Take(50)
             .ToListAsync();
 
-        ViewBag.Products = new SelectList(products, "Id", "Name");
+        return Json(list);
     }
 
     private async Task FillProductsAndWarehousesAsync()
     {
-        await FillProductsAsync();
-
         ViewBag.Warehouses = new SelectList(
             await _context.Warehouses.OrderBy(w => w.Name).ToListAsync(),
             "Id", "Name"
@@ -322,4 +338,23 @@ public class StocksController : Controller
         ViewBag.Warehouses = new SelectList(warehouses, "Id", "Name");
     }
 
+    private async Task FillWarehouseProducts(int warehouseId)
+    {
+        var warehouseProducts = await _context
+            .StockTxns
+            .Where(st => st.WarehouseId == warehouseId)
+            .Include(st => st.Product)
+            .GroupBy(st => st.ProductId)
+            .Select(g => new
+            {
+                Code = g.Select(st => st.Product!.Code).FirstOrDefault(),
+                Qty = g.Sum(st => st.Direction == StockDirection.In ? st.Qty : -st.Qty),
+                Unit = g.Select(st => st.Product!.Unit).FirstOrDefault(),
+                Name = g.Select(st => st.Product!.Name).FirstOrDefault()
+            })
+            .Where(wp => wp.Qty > 0)
+            .ToListAsync();
+
+        ViewBag.WarehouseProducts = warehouseProducts;
+    }
 }

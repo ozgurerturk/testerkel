@@ -1,7 +1,4 @@
-﻿// product.js
-
-// Sadece Products/Index sayfası varsa çalışan init fonksiyonu
-function initProductIndexPage() {
+﻿function initProductIndexPage() {
     // Bu sayfa değilse hiçbir şey yapma
     var pageRoot = document.getElementById("product-index-page");
     if (!pageRoot) {
