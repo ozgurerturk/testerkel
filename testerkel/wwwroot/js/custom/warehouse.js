@@ -1,7 +1,6 @@
 ﻿// wwwroot/js/custom/warehouse.js
 (function () {
 
-    // Edit/View mode + Save buton davranışı
     window.initWarehouseEditToggle = function (options) {
         var formId = options && options.formId ? options.formId : "warehouseForm";
         var form = document.getElementById(formId);
@@ -97,7 +96,37 @@
         });
     };
 
-    // Depodaki ürünleri ayrı tab'da AJAX ile getir
+    window.initElements = function () {
+        var dt = new DataTable("#warehouseTable", {
+            searching: true,
+            ordering: true,
+            pageLength: 25,
+            lengthMenu: [10, 25, 50, 100],
+
+            language: {
+                search: "Ara:",
+                emptyTable: "Gösterilecek kayıt yok",
+                info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                infoEmpty: "Kayıt yok",
+                infoFiltered: "(_MAX_ kayıttan filtrelendi)",
+                lengthMenu: "Sayfada _MENU_ kayıt göster",
+                loadingRecords: "Yükleniyor...",
+                processing: "İşleniyor...",
+                zeroRecords: "Eşleşen kayıt bulunamadı",
+                paginate: {
+                    first: "İlk Sayfa",
+                    last: "Son Sayfa",
+                    next: "Sonraki",
+                    previous: "Önceki"
+                },
+                aria: {
+                    orderable: ": sütunu sıralamak için tıklayın",
+                    orderableReverse: ": sütunu sıralamayı kaldırmak için tıklayın"
+                }
+            }
+        });
+    }
+
     window.initWarehouseProductsTab = function (options) {
         var productsTabId = options.productsTabId || "products-tab";
         var containerId = options.productsContainerId || "warehouseProductsContainer";
@@ -162,8 +191,10 @@
 
     window.warehouseDetailsInit = function (options) {
         options = options || {};
+
         window.initWarehouseEditToggle(options);
-        window.initWarehouseProductsTab(options);
+        window.initElements();
+        //window.initWarehouseProductsTab(options);
     };
 
 })();

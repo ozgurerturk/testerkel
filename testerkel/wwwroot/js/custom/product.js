@@ -105,8 +105,31 @@
                 orderable: ": sütunu sıralamak için tıklayın",
                 orderableReverse: ": sütunu sıralamayı kaldırmak için tıklayın"
             }
+        },
+
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        text: "Malzemeleri Excel Dosyasına Aktar",
+                        className: "btn btn-success btn-sm me-2",
+                        action: function (e, dt, node, config) {
+                            window.location.href = "/Products/CreateProductsExcel";
+                        }
+                    },
+                    {
+                        text: "Malzemeleri Pdf Dosyasına Aktar",
+                        className: "btn btn-danger btn-sm",
+                        action: function (e, dt, node, config) {
+                            window.location.href = "/Products/CreateProductsPdf";
+                        }
+                    }
+                ]
+            }
         }
     });
+
+
 }
 
 // Sayfa yüklendiğinde sadece "ilgili" init fonksiyonlarını çağır

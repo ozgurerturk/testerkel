@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
 using testerkel.Data;
 using testerkel.Models;
 using testerkel.ViewModels.Product;
@@ -454,6 +455,86 @@ namespace testerkel.Controllers
             }
         }
 
+        [HttpGet]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public IActionResult CreateProductsExcel()
+        {
+            var wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("Malzemeler");
+
+            ws.Cell(1, 1).Value = "Malzeme Kodu";
+            ws.Cell(1, 2).Value = "Malzeme İsmi";
+            ws.Cell(1, 3).Value = "Birim";
+
+            ws.Row(1).Style.Font.Bold = true;
+
+            var products = _context.Products.AsNoTracking().OrderBy(p => p.Code).ToList();
+
+            for (int i = 0; i < products.Count; i++)
+            {
+                ws.Cell(i + 2, 1).Value = products[i].Code;
+                ws.Cell(i + 2, 2).Value = products[i].Name;
+                ws.Cell(i + 2, 3).Value = products[i].Unit.ToString();
+            }
+
+            ws.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+            wb.SaveAs(stream);
+            byte[] content = stream.ToArray();
+
+            var fileName = "GüncelMalzemeExcelListesi.xlsx";
+
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
+        [HttpGet]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public IActionResult CreateProductsPdf()
+        {
+            var products = _context.Products.AsNoTracking().OrderBy(p => p.Code).ToList();
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+
+                    page.Header().Text("Malzeme Listesi")
+                        .FontSize(18)
+                        .Bold()
+                        .AlignCenter();
+
+                    page.Content().Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(4);
+                            columns.RelativeColumn(2);
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().PaddingVertical(6).Text("Kod").Bold();
+                            header.Cell().PaddingVertical(6).Text("Ürün Adı").Bold();
+                            header.Cell().PaddingVertical(6).Text("Birim").Bold();
+                        });
+
+                        foreach (var p in products)
+                        {
+                            table.Cell().PaddingVertical(6).Text(p.Code);
+                            table.Cell().PaddingVertical(6).Text(p.Name ?? "");
+                            table.Cell().PaddingVertical(6).Text(p.Unit.ToString());
+                        }
+                    });
+                });
+            });
+
+            var pdfBytes = document.GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", "GüncelMalzemeListesi.pdf");
+        }
 
         [HttpGet]
         public async Task<IActionResult> PriceInfo(int? id)

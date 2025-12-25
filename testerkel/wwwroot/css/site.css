@@ -127,3 +127,37 @@ main {
 .footer-content {
     background: white
 }
+
+/* Tüm DataTables butonlarına Bootstrap buton davranışı verelim */
+.dt-buttons .dt-button {
+    border-radius: 0.25rem;
+    border: 1px solid transparent;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+    /* Excel yeşili */
+    .dt-buttons .dt-button.btn-success {
+        background-color: #198754 !important;
+        border-color: #198754 !important;
+        color: #fff !important;
+    }
+
+    /* PDF kırmızısı */
+    .dt-buttons .dt-button.btn-danger {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+        color: #fff !important;
+    }
+
+    /* Hover durumları */
+    .dt-buttons .dt-button.btn-success:hover {
+        background-color: #157347 !important;
+        border-color: #146c43 !important;
+    }
+
+    .dt-buttons .dt-button.btn-danger:hover {
+        background-color: #bb2d3b !important;
+        border-color: #b02a37 !important;
+    }
+
