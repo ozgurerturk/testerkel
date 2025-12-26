@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using testerkel.Data;
 using testerkel.Models;
-using testerkel.Utility;
 
 public class SettingsController : Controller
 {

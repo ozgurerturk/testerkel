@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using testerkel.Models;
 
 namespace testerkel.Controllers

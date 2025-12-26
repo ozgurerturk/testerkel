@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using testerkel.Data;
 using testerkel.Models;
 using testerkel.ViewModels.Warehouse;

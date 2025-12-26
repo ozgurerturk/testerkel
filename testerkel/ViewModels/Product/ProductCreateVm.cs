@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using testerkel.Models;
-using testerkel.Utility;
 
 namespace testerkel.ViewModels.Product
 {

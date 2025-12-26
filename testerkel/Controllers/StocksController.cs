@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
 using testerkel.Data;
 using testerkel.Models;
 using testerkel.ViewModels.Stock;

@@ -1,6 +1,4 @@
-﻿using testerkel.Utility;
-
-namespace testerkel.Models
+﻿namespace testerkel.Models
 {
     public class Product
     {

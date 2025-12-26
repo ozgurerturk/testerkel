@@ -231,7 +231,7 @@ namespace testerkel.Controllers
             ws.Cell(2, 3).Value = "Adet";
 
             ws.Columns().AdjustToContents();
-            
+
             using var stream = new MemoryStream();
             wb.SaveAs(stream);
             byte[] content = stream.ToArray();
