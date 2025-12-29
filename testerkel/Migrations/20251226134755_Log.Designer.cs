@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using testerkel.Data;
 
@@ -11,9 +12,11 @@ using testerkel.Data;
 namespace testerkel.Migrations
 {
     [DbContext(typeof(ErkelErpDbContext))]
-    partial class ErkelErpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251226134755_Log")]
+    partial class Log
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,11 +176,6 @@ namespace testerkel.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<bool>("EnableNotifications")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using testerkel.Data;
 using testerkel.Models;
 using testerkel.ViewModels.Stock;
 
+[Authorize]
 public class StocksController : Controller
 {
     private readonly ErkelErpDbContext _context;

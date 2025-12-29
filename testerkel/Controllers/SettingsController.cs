@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using testerkel.Data;
 using testerkel.Models;
 
+[Authorize]
 public class SettingsController : Controller
 {
     private readonly ErkelErpDbContext _context;

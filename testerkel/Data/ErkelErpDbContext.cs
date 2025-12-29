@@ -1,14 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using testerkel.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+
 namespace testerkel.Data
 {
-    public class ErkelErpDbContext : DbContext
+    public class ErkelErpDbContext(DbContextOptions<ErkelErpDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
-        public ErkelErpDbContext(DbContextOptions<ErkelErpDbContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Warehouse> Warehouses => Set<Warehouse>();
         public DbSet<Customer> Customers => Set<Customer>();
@@ -32,6 +30,12 @@ namespace testerkel.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>(e =>
+            {
+                e.Property(x => x.EnableNotifications)
+                    .HasDefaultValue(true);
+            });
 
             // Product
             modelBuilder.Entity<Product>(e =>

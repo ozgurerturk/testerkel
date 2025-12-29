@@ -111,10 +111,7 @@
                             </button>
                             <div class="collapse" id="account-collapse">
                                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                    <li><a href="#" class="link-dark rounded">New...</a></li>
-                                    <li><a href="#" class="link-dark rounded">Profile</a></li>
-                                    <li><a href="#" class="link-dark rounded">Settings</a></li>
-                                    <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                                    <li><a href="@Url.Action("Index", "Users")" class="link-dark rounded">Kullanıcı Listesi</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -131,6 +128,15 @@
                     }
                 </style>
             }
+            @* @if (ViewData["Title"]?.ToString() == "Giriş Sayfası")
+            {
+                <style>
+                    body {
+                        background: url('/assets/img/girisbackground.jpg') no-repeat center center fixed;
+                        background-size: cover;
+                    }
+                </style>
+            } *@
 
             <main class="col-12 col-lg-9 col-xl-10 ms-auto px-4 py-3 main-content">
                 @RenderBody()
@@ -140,7 +146,7 @@
 
     <footer class="border-top footer text-muted footer-content">
         <div class="container">
-            &copy; 2025 - testerkel - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - ERKEL ERP - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using testerkel.ViewModels.Stock;
 
 namespace testerkel.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly ErkelErpDbContext _context;
