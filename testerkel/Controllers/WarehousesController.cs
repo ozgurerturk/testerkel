@@ -8,6 +8,7 @@ using testerkel.ViewModels.Warehouse;
 namespace testerkel.Controllers
 {
     [Authorize]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public class WarehousesController : Controller
     {
         private readonly ErkelErpDbContext _context;

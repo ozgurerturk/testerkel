@@ -1,0 +1,40 @@
+﻿@model testerkel.ViewModels.Auth.UserViewModel
+@{
+    var roleList = ViewBag.Roles as List<testerkel.ViewModels.Auth.RoleViewModel>;
+}
+
+@{
+    ViewData["Title"] = "Kullanıcı Kaydı";
+}
+
+<h1>Kullanıcı Kaydı</h1>
+
+<form asp-action="Register" method="post">
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="EnabledNotifications" class="form-label">Bildirimleri Al?</label>
+        <input asp-for="EnabledNotifications" class="form-check-input" value="true"/>
+        <span asp-validation-for="EnabledNotifications" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Şifre</label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Role.Id" class="form-label">Rol</label>
+        <select asp-for="Role.Id" class="form-select" asp-items="@(new SelectList(roleList, "Id", "Name"))">
+            <option value="">-- Rol Seçiniz --</option>
+        </select>
+        <span asp-validation-for="Role.Id" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+</form>
+
+@section Scripts {
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}

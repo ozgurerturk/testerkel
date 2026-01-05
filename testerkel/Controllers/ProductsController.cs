@@ -12,6 +12,7 @@ using testerkel.ViewModels.Stock;
 namespace testerkel.Controllers
 {
     [Authorize]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public class ProductsController : Controller
     {
         private readonly ErkelErpDbContext _context;

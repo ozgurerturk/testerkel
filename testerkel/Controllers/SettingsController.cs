@@ -6,6 +6,7 @@ using testerkel.Data;
 using testerkel.Models;
 
 [Authorize]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class SettingsController : Controller
 {
     private readonly ErkelErpDbContext _context;

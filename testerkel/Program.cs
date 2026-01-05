@@ -27,7 +27,8 @@ builder.Services
 
         options.SignIn.RequireConfirmedAccount = false;
     })
-    .AddEntityFrameworkStores<ErkelErpDbContext>();
+    .AddEntityFrameworkStores<ErkelErpDbContext>()
+    .AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>

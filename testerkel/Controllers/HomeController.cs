@@ -6,6 +6,7 @@ using testerkel.Models;
 namespace testerkel.Controllers
 {
     [Authorize]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

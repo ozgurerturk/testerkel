@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
@@ -6,6 +7,7 @@
     <title>@ViewData["Title"] - ERKEL ERP</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/testerkel.styles.css" asp-append-version="true" />
     <link href="~/lib/datetimepicker/css/jquery.datetimepicker.min.css" rel="stylesheet" />
@@ -30,10 +32,44 @@
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik</a>
+                    </ul>
+                </div>
+                <div class="flex-shrink-0 dropdown">
+                    <a href="#"
+                       class="d-block link-dark text-decoration-none dropdown-toggle"
+                       id="dropdownUser2"
+                       data-bs-toggle="dropdown"
+                       data-bs-display="static"
+                       aria-expanded="false">
+                        @* <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle"> *@
+                        <i class="bi bi-person-circle fs-4 text-white"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser2" style="">
+                        <li><bdi class="dropdown-item-text"><b>Kullanıcı: </b>@User.Identity.Name</bdi></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item"
+                               asp-controller="Account"
+                               asp-action="Details"
+                               asp-route-id="@User?.FindFirstValue(ClaimTypes.NameIdentifier)">
+                                Kullanıcı Detayı
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post"
+                                  class="m-0">
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="dropdown-item">
+                                    Çıkış Yap
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>

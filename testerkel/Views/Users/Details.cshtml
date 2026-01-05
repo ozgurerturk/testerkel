@@ -1,0 +1,79 @@
+﻿@model testerkel.ViewModels.Auth.UserViewModel
+
+@{
+    ViewData["Title"] = "Kullanıcı Detayı";
+}
+
+<h1 class="mb-3">Kullanıcı Detayı</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Index" class="btn btn-link">Geri</a>
+</div>
+
+<hr />
+
+<div class="card">
+    <div class="card-header">
+        <strong>Kullanıcı Bilgileri</strong>
+    </div>
+
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Email: @Model.Email</label>
+        </div>
+        <br />
+        <div class="mb-3">
+            <label class="form-label">Rol: @Model.Role.Name</label>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <strong>Şifre Değiştir</strong>
+    </div>
+
+    <div class="card-body">
+        <div id="pwdErrors" class="alert alert-danger d-none"></div>
+
+        <input type="hidden" id="userId" value="@Model.Id"/>
+
+        <div class="mb-3">
+            <label class="form-label">Eski Şifre</label>
+            <input id="txtCurrentPassword" type="password" class="form-control" autocomplete="current-password" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Yeni Şifre</label>
+            <input id="txtNewPassword" type="password" class="form-control" autocomplete="new-password" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Yeni Şifre (Tekrar)</label>
+            <input id="txtNewPasswordConfirm" type="password" class="form-control" autocomplete="new-password" />
+        </div>
+
+        <button id="btnChangePassword" type="button" class="btn btn-primary">
+            Şifreyi Güncelle
+        </button>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/js/custom/user.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof initChangePassword === "function") {
+                initChangePassword();
+            }
+        });
+    </script>
+}
+

@@ -7,7 +7,7 @@
 
     console.log("Product Index page init");
 
-    // Delete butonları için click handler
+    // Click handler for delete buttons
     $(document).on("click", ".js-product-delete", function (e) {
         e.preventDefault();
 
