@@ -10,12 +10,12 @@
         public int WarehouseId { get; set; }
         public Warehouse? Warehouse { get; set; }
 
-        public decimal Qty { get; set; }                 // Her zaman pozitif
+        public decimal Qty { get; set; }
 
-        public decimal? UnitPrice { get; set; }   // özellikle PurchaseIn için
-        public decimal? LineTotal { get; set; }   // istersen UnitPrice * Qty (opsiyonel)
+        public decimal? UnitPrice { get; set; }
+        public decimal? LineTotal { get; set; }
 
-        public StockDirection Direction { get; set; }    // tinyint
+        public StockDirection Direction { get; set; }
         public StockMovementType MovementType { get; set; }
 
         public DateTime TxnDate { get; set; } = DateTime.UtcNow;

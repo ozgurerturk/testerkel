@@ -45,7 +45,6 @@
     }
 
     <script>
-        // Basit: form submit'te çift tıklamayı engellemek için submit butonunu disable edelim
         var form = document.querySelector('form');
         if (form) {
             form.addEventListener('submit', function () {
@@ -61,7 +60,6 @@
                 return;
             }
 
-            // 1) number kuralını normalize et (virgülü noktaya çevir)
             if ($.validator.methods.number) {
                 var originalNumber = $.validator.methods.number;
                 $.validator.methods.number = function (value, element) {
@@ -74,7 +72,6 @@
                 };
             }
 
-            // 2) range kuralını da normalize et
             if ($.validator.methods.range) {
                 $.validator.methods.range = function (value, element, param) {
                     if (this.optional(element)) {
@@ -95,7 +92,6 @@
                 };
             }
 
-            // 3) (Opsiyonel ama güzel) submit'te input değerini normalize et
             var form = document.querySelector('form');
             if (form) {
                 form.addEventListener('submit', function () {

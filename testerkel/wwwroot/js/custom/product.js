@@ -1,5 +1,4 @@
 ﻿function initProductIndexPage() {
-    // Bu sayfa değilse hiçbir şey yapma
     var pageRoot = document.getElementById("product-index-page");
     if (!pageRoot) {
         return;
@@ -26,14 +25,12 @@
                 return;
             }
 
-            // Evet dendi → AJAX ile delete
             $.ajax({
                 url: "/Products/DeleteAjax",
                 type: "POST",
                 data: { id: id },
                 success: function (resp) {
                     if (resp && resp.success) {
-                        // Satırı DOM'dan kaldır
                         var row = button.closest("tr");
                         row.fadeOut(200, function () {
                             row.remove();
@@ -132,10 +129,6 @@
 
 }
 
-// Sayfa yüklendiğinde sadece "ilgili" init fonksiyonlarını çağır
 document.addEventListener("DOMContentLoaded", function () {
-    // İleride başka sayfa init fonksiyonları da ekleyebilirsin:
-    // initCustomerIndexPage(), initOrderCreatePage(), vs.
-    // Şu an sadece product index init çalışacak:
     initProductIndexPage();
 });

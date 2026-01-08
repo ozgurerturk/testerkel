@@ -35,7 +35,6 @@
 
 function initIndexMethods() {
     
-    // ViewData["Title"] = "Kullanıcılar" ise fonksiyon çalışsın
     if (document.title !== "Kullanıcılar") {
         return;
     }

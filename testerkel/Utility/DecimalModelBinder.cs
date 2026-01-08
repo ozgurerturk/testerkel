@@ -15,7 +15,6 @@ namespace testerkel.Utility
                 return Task.CompletedTask;
             }
 
-            // Hepsini TR ondalık formatına çevir: "." -> ","
             value = value.Replace(".", ",");
 
             if (decimal.TryParse(value, NumberStyles.Number, new CultureInfo("tr-TR"), out var parsed))

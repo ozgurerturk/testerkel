@@ -18,7 +18,7 @@ public class StocksController : Controller
     }
 
     // ---------------------------------------------------------
-    //  STOK İŞLEMLERİ ANA SAYFASI
+    //  STOCKS MAIN PAGE
     // ---------------------------------------------------------
     [HttpGet]
     public async Task<IActionResult> Index(int? warehouseId)
@@ -70,7 +70,7 @@ public class StocksController : Controller
 
 
     // ---------------------------------------------------------
-    //  STOK GİRİŞİ (PurchaseIn)
+    //  Stocks Purchase In
     // ---------------------------------------------------------
     [HttpGet]
     public async Task<IActionResult> PurchaseIn(int warehouseId)
@@ -117,10 +117,10 @@ public class StocksController : Controller
 
 
     // ---------------------------------------------------------
-    //  STOK ÇIKIŞI (SalesOut)
+    //  Stocks Sales Out
     // ---------------------------------------------------------
     [HttpGet]
-    public IActionResult SalesOut(int warehouseId)
+    public async Task<IActionResult> SalesOut(int warehouseId)
     {
         var vm = new StockTxnVm
         {
@@ -129,6 +129,7 @@ public class StocksController : Controller
             SubmitText = "Stok Çıkışını Kaydet"
         };
 
+        await FillWarehouseProducts(warehouseId);
         return View("/Views/Stocks/StockMove.cshtml", vm);
     }
 
@@ -138,6 +139,15 @@ public class StocksController : Controller
     {
         if (!ModelState.IsValid)
         {
+            return View("/Views/Stocks/StockMove.cshtml", vm);
+        }
+
+        decimal currentStock = await GetCurrentStockAmount(vm.WarehouseId, vm.ProductId);
+
+        if (vm.Qty > currentStock)
+        {
+            ModelState.AddModelError(string.Empty, $"Yetersiz stok miktarı. Sarf edilen miktar: {vm.Qty}, Mevcut stok: {currentStock}");
+            await FillProductsAndWarehousesAsync();
             return View("/Views/Stocks/StockMove.cshtml", vm);
         }
 
@@ -160,10 +170,10 @@ public class StocksController : Controller
 
 
     // ---------------------------------------------------------
-    //  SARF / TÜKETİM (ConsumptionOut)
+    //  Consumption Out
     // ---------------------------------------------------------
     [HttpGet]
-    public IActionResult ConsumptionOut(int warehouseId)
+    public async Task<IActionResult> ConsumptionOut(int warehouseId)
     {
         var vm = new StockTxnVm
         {
@@ -172,6 +182,7 @@ public class StocksController : Controller
             SubmitText = "Sarf Kaydet"
         };
 
+        await FillWarehouseProducts(warehouseId);
         return View("/Views/Stocks/StockMove.cshtml", vm);
     }
 
@@ -181,6 +192,15 @@ public class StocksController : Controller
     {
         if (!ModelState.IsValid)
         {
+            return View("/Views/Stocks/StockMove.cshtml", vm);
+        }
+
+        decimal currentStock = await GetCurrentStockAmount(vm.WarehouseId, vm.ProductId);
+
+        if (vm.Qty > currentStock)
+        {
+            ModelState.AddModelError(string.Empty, $"Yetersiz stok miktarı. Sarf edilen miktar: {vm.Qty}, Mevcut stok: {currentStock}");
+            await FillProductsAndWarehousesAsync();
             return View("/Views/Stocks/StockMove.cshtml", vm);
         }
 
@@ -214,7 +234,8 @@ public class StocksController : Controller
         }
         };
 
-        await FillProductsAndWarehousesAsync(); // helper, action değil
+        await FillProductsAndWarehousesAsync();
+        await FillWarehouseProducts(fromWarehouseId ?? 1);
         return View("/Views/Stocks/StockTransfer.cshtml", vm);
     }
 
@@ -230,11 +251,22 @@ public class StocksController : Controller
 
         if (!ModelState.IsValid)
         {
-            await FillProductsAndWarehousesAsync(); // helper, action değil
+            await FillProductsAndWarehousesAsync();
             return View("/Views/Stocks/StockTransfer.cshtml", vm);
         }
 
-        // 1) Transfer fişini oluştur
+        // Check stock availability for each line
+        foreach (var line in vm.Lines.Where(x => x.Qty > 0))
+        {
+            decimal currentStock = await GetCurrentStockAmount(vm.FromWarehouseId, line.ProductId);
+            if (line.Qty > currentStock)
+            {
+                ModelState.AddModelError(string.Empty, $"Yetersiz stok miktarı. Ürün ID: {line.ProductId}, Sarf edilen miktar: {line.Qty}, Mevcut stok: {currentStock}");
+                await FillProductsAndWarehousesAsync();
+                return View("/Views/Stocks/StockTransfer.cshtml", vm);
+            }
+        }
+
         var transfer = new StockTransfer
         {
             FromWarehouseId = vm.FromWarehouseId,
@@ -244,9 +276,8 @@ public class StocksController : Controller
         };
 
         _context.StockTransfers.Add(transfer);
-        await _context.SaveChangesAsync(); // transfer.Id oluşsun diye
+        await _context.SaveChangesAsync();
 
-        // 2) Satırları ve stok hareketlerini oluştur
         foreach (var line in vm.Lines.Where(x => x.Qty > 0))
         {
             var transferLine = new StockTransferLine
@@ -257,7 +288,6 @@ public class StocksController : Controller
             };
             _context.StockTransferLines.Add(transferLine);
 
-            // Çıkış hareketi (kaynak depo)
             _context.StockTxns.Add(new StockTxn
             {
                 ProductId = line.ProductId,
@@ -270,7 +300,6 @@ public class StocksController : Controller
                 RefId = transfer.Id
             });
 
-            // Giriş hareketi (hedef depo)
             _context.StockTxns.Add(new StockTxn
             {
                 ProductId = line.ProductId,
@@ -289,13 +318,6 @@ public class StocksController : Controller
         return RedirectToAction("Details", "Warehouses", new { id = vm.FromWarehouseId });
     }
 
-
-
-    // ---------------------------------------------------------
-    //  DROPDOWN İÇİN ÜRÜN LİSTESİ DOLDURMA
-    // ---------------------------------------------------------
-    [HttpPost]
-    // DROPDOWN İÇİN ÜRÜN LİSTESİ DOLDURMA
     [HttpPost]
     public async Task<IActionResult> FillProducts(string searchTerm)
     {
@@ -305,7 +327,6 @@ public class StocksController : Controller
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            // Column'lara Turkish_CI_AS uygula (sadece bu sorgu için)
             q = q.Where(p =>
                 EF.Functions.Collate(p.Code, "Turkish_CI_AS").Contains(searchTerm) ||
                 (p.Name != null && EF.Functions.Collate(p.Name, "Turkish_CI_AS").Contains(searchTerm)));
@@ -358,5 +379,12 @@ public class StocksController : Controller
             .ToListAsync();
 
         ViewBag.WarehouseProducts = warehouseProducts;
+    }
+
+    private async Task<decimal> GetCurrentStockAmount(int warehouseId, int productId)
+    {
+        return await _context.StockTxns
+            .Where(st => st.WarehouseId == warehouseId && st.ProductId == productId)
+            .SumAsync(st => st.Direction == StockDirection.In ? st.Qty : -st.Qty);
     }
 }

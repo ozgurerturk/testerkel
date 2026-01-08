@@ -8,7 +8,7 @@
         public Customer? Customer { get; set; }
 
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-        public string Status { get; set; } = "Draft";   // Draft, Confirmed
+        public string Status { get; set; } = "Draft";
 
         public IList<SalesOrderLine> Lines { get; set; } = new List<SalesOrderLine>();
     }

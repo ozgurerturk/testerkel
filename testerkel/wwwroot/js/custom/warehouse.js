@@ -131,7 +131,7 @@
         var productsTabId = options.productsTabId || "products-tab";
         var containerId = options.productsContainerId || "warehouseProductsContainer";
         var warehouseId = options.warehouseId;
-        var getProductsUrl = options.getProductsUrl; // base URL, örn: /Warehouses/GetProducts
+        var getProductsUrl = options.getProductsUrl;
 
         var productsTab = document.getElementById(productsTabId);
         var container = document.getElementById(containerId);

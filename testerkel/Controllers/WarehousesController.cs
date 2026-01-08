@@ -28,14 +28,14 @@ namespace testerkel.Controllers
                 .OrderBy(x => x.Code)
                 .ToListAsync();
 
-            return View(warehouses);   // @model IEnumerable<Warehouse>
+            return View(warehouses);
         }
 
         // GET: Warehouses/Create
         public IActionResult Create()
         {
             var vm = new WarehouseEditVm();
-            return View(vm); // @model WarehouseEditVm
+            return View(vm);
         }
 
         // POST: Warehouses/Create
@@ -148,7 +148,6 @@ namespace testerkel.Controllers
         {
             var products = await GetWarehouseProductsAsync(warehouseId);
 
-            // products zaten boş liste olabilir, sorun değil
             return Json(products);
         }
 
@@ -196,7 +195,7 @@ namespace testerkel.Controllers
                 Products = products
             };
 
-            return View(vm); // @model WarehouseEditVm
+            return View(vm);
         }
     }
 }

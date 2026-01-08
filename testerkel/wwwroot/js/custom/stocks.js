@@ -47,7 +47,6 @@ function getProducts() {
                 });
         })
         .on('select2:selecting', function () {
-            // seçim anında arama/yenileme karışmasın
             suppressSearch = true;
         })
         .on('select2:select', function () {
@@ -89,10 +88,8 @@ var doSearch = debounce(function (term) {
         success: function (list) {
             var selectedVal = $select.val();
 
-            // seçili option'u tut, diğerlerini temizle
             $select.find('option').not(':selected').remove();
 
-            // yeni options ekle (duplicate engelle)
             var existing = {};
             $select.find('option').each(function () { existing[this.value] = true; });
 
@@ -106,23 +103,17 @@ var doSearch = debounce(function (term) {
 
             if (selectedVal) $select.val(selectedVal);
 
-            // Select2'ye değişiklik bildir
             $select.trigger('change');
 
-            // dropdown açıksa: KAPAT-AÇ YAPMA!
             if (isOpen) {
-                // Search input'u tekrar bul ve focus'u geri ver
                 var $search = $('.select2-search__field');
                 $search.val(term);
 
-                // focus ve imleci sona al (DOM yeniden yaratılmadığı için kalır)
                 $search.focus();
                 var el = $search.get(0);
                 if (el) el.setSelectionRange(term.length, term.length);
 
-                // Bazı sürümlerde results render'ı için tetik:
-                // (open state değişmeden)
-                $select.trigger('select2:select'); // harmless "ping"
+                $select.trigger('select2:select');
             }
         },
         error: function (xhr, status) {

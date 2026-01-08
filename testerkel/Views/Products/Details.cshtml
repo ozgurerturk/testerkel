@@ -61,7 +61,6 @@
     }
 
     <script>
-        // Kullanıcının isteği: var kullanalım
         (function () {
             var form = document.getElementById("productForm");
             var editBtn = document.getElementById("btnEdit");
@@ -77,7 +76,6 @@
             var isEditMode = false;
             var initialValues = {};
 
-            // İlk değerleri sakla (Cancel için)
             editableFields.forEach(function (el) {
                 initialValues[el.name] = el.value;
             });
@@ -115,7 +113,6 @@
                 }
             }
 
-            // Başlangıç: View mode
             setEditMode(false);
 
             editBtn.addEventListener("click", function (e) {
@@ -126,7 +123,6 @@
             cancelBtn.addEventListener("click", function (e) {
                 e.preventDefault();
 
-                // Alanları başlangıç değerlerine geri al
                 editableFields.forEach(function (el) {
                     if (initialValues.hasOwnProperty(el.name)) {
                         el.value = initialValues[el.name];
@@ -137,7 +133,6 @@
             });
 
             form.addEventListener("submit", function () {
-                // Double click önleme
                 saveBtn.disabled = true;
             });
         })();
@@ -147,7 +142,6 @@
                 return;
             }
 
-            // 1) number kuralını normalize et (virgülü noktaya çevir)
             if ($.validator.methods.number) {
                 var originalNumber = $.validator.methods.number;
                 $.validator.methods.number = function (value, element) {
@@ -160,7 +154,6 @@
                 };
             }
 
-            // 2) range kuralını da normalize et
             if ($.validator.methods.range) {
                 $.validator.methods.range = function (value, element, param) {
                     if (this.optional(element)) {
@@ -181,7 +174,6 @@
                 };
             }
 
-            // 3) (Opsiyonel ama güzel) submit'te input değerini normalize et
             var form = document.querySelector('form');
             if (form) {
                 form.addEventListener('submit', function () {

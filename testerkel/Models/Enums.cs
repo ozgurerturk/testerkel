@@ -27,12 +27,12 @@
 
     public enum StockMovementType : byte
     {
-        PurchaseIn = 1,   // Satınalma girişi
-        TransferIn = 2,   // Depodan depoya transfer girişi
+        PurchaseIn = 1,
+        TransferIn = 2,
 
-        ConsumptionOut = 10, // Sarf
-        SalesOut = 11, // Satış
-        TransferOut = 12  // Depodan depoya transfer çıkışı
+        ConsumptionOut = 10,
+        SalesOut = 11,
+        TransferOut = 12
     }
 
 }

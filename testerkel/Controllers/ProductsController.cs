@@ -122,9 +122,9 @@ namespace testerkel.Controllers
                 Unit = product.Unit
             };
 
-            PopulateUnitTypes(vm); // Edit’te kullandığın helper
+            PopulateUnitTypes(vm);
 
-            return View(vm); // @model ProductEditVm
+            return View(vm);
         }
 
 
@@ -137,7 +137,7 @@ namespace testerkel.Controllers
                 Unit = UnitType.Adet
             };
             PopulateUnitTypes(vm);
-            return View(vm); // @model ProductCreateVm
+            return View(vm);
         }
 
         // POST: Products/Create
@@ -168,7 +168,6 @@ namespace testerkel.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Örneğin Code unique ise ve çakışma olduysa
                 _logger.LogError(ex, "Error while creating product. Code={Code}", product.Code);
                 ModelState.AddModelError(string.Empty, "An error occurred while saving product.");
                 PopulateUnitTypes(vm);
@@ -294,7 +293,6 @@ namespace testerkel.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Rapor kolonlarını ekle (Durum + Hata)
                 var lastCol = worksheet.LastColumnUsed()?.ColumnNumber() ?? 3;
                 var statusCol = lastCol + 1;
                 var errorCol = lastCol + 2;
@@ -303,7 +301,6 @@ namespace testerkel.Controllers
                 worksheet.Cell(headerRowNumber, errorCol).Value = "Hata Notu";
                 worksheet.Row(headerRowNumber).Style.Font.Bold = true;
 
-                // DB'de olan kodları tek seferde çek (unique hatasını burada yakalarız)
                 var incomingCodes = new List<string>();
 
                 var firstDataRow = headerRowNumber + 1;
@@ -328,7 +325,6 @@ namespace testerkel.Controllers
 
                 var existingSet = new HashSet<string>(existingCodes, StringComparer.OrdinalIgnoreCase);
 
-                // Excel içi duplicate kontrolü için
                 var seenCodesInExcel = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                 var productsToAdd = new List<Product>();
@@ -336,7 +332,6 @@ namespace testerkel.Controllers
 
                 for (var row = firstDataRow; row <= lastDataRow; row++)
                 {
-                    // tamamen boş satır skip
                     if (worksheet.Row(row).CellsUsed().Count() == 0)
                         continue;
 
@@ -350,23 +345,19 @@ namespace testerkel.Controllers
 
                     var errors = new List<string>();
 
-                    // Kod zorunlu
                     if (string.IsNullOrWhiteSpace(code))
                     {
                         errors.Add("Kod boş olamaz.");
-                        // Kod hücresini kırmızı yap
                         codeCell.Style.Fill.BackgroundColor = XLColor.LightPink;
                     }
                     else
                     {
-                        // Excel içi duplicate
                         if (!seenCodesInExcel.Add(code))
                         {
                             errors.Add($"Excel içinde tekrar eden kod: {code}");
                             codeCell.Style.Fill.BackgroundColor = XLColor.LightPink;
                         }
 
-                        // DB duplicate
                         if (existingSet.Contains(code))
                         {
                             errors.Add($"Bu kod zaten sistemde var: {code}");
@@ -374,7 +365,6 @@ namespace testerkel.Controllers
                         }
                     }
 
-                    // Unit alias çözümle
                     UnitType? resolvedUnit = null;
                     if (!string.IsNullOrWhiteSpace(unitStr))
                     {
@@ -395,7 +385,6 @@ namespace testerkel.Controllers
                     {
                         hasAnyError = true;
 
-                        // Satırı kırmızıya boya (tam satır)
                         worksheet.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#ffe5e5");
 
                         worksheet.Cell(row, statusCol).Value = "HATALI";
@@ -406,7 +395,6 @@ namespace testerkel.Controllers
                         continue;
                     }
 
-                    // Doğru satır
                     worksheet.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#eaffea");
                     worksheet.Cell(row, statusCol).Value = "OK";
                     worksheet.Cell(row, statusCol).Style.Font.FontColor = XLColor.DarkGreen;
@@ -424,7 +412,6 @@ namespace testerkel.Controllers
 
                 worksheet.Columns().AdjustToContents();
 
-                // Hata varsa: raporlu Excel indir
                 if (hasAnyError)
                 {
                     using var outStream = new MemoryStream();
@@ -437,7 +424,6 @@ namespace testerkel.Controllers
                         fileName);
                 }
 
-                // Hata yoksa: DB kaydet
                 if (productsToAdd.Count == 0)
                 {
                     TempData["Error"] = "Excel dosyasında eklenebilecek geçerli ürün bulunamadı.";
@@ -597,7 +583,7 @@ namespace testerkel.Controllers
                 LastPrice = lastPrice,
                 MovementHistory = stockMovements
             };
-            return View(vm); // @model ProductPriceInfoVm
+            return View(vm);
         }
 
         // --- Helper ---
@@ -633,13 +619,11 @@ namespace testerkel.Controllers
 
             var raw = unitStr.Trim();
 
-            // Normalize: boşluk, nokta, büyük/küçük farkı kaldır
             var normalized = raw
                 .Replace(" ", "")
                 .Replace(".", "")
                 .ToLowerInvariant();
 
-            // 1) Alias tablosundan ara
             var unitFromAlias = await _context.UnitAliases
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x =>
@@ -651,7 +635,6 @@ namespace testerkel.Controllers
             if (unitFromAlias != null)
                 return unitFromAlias.UnitType;
 
-            // 2) Fallback: enum adı yazılmış olabilir (Kilogram, Metre vb.)
             if (Enum.TryParse<UnitType>(raw, true, out var enumUnit))
                 return enumUnit;
 
